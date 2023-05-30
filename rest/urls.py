@@ -78,6 +78,7 @@ urlpatterns = [
     path('user/add/', user_register, name='user_register'),
     path('user/update/<int:task_id>/', update_user, name='update_user'),
     path('user/login/', user_login, name='user_login'),
+    path('gitcheck', user_login, name='user_login'),
 
     #path('register/superuser/', SuperuserRegistrationView.as_view(), name='superuser-registration'),
     #path('superusers/', admin_list, name='admin_list'),
