@@ -379,12 +379,17 @@ def Commentuser_list(request):
 
 @api_view(['POST'])
 def commentuser_add(request):
-    if request.method == 'POST':
-        serializer = CommentuserSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
+    serializer = CommentuserSerializer(data=request.data)
+    if serializer.is_valid():
+        hours = request.data.get('hours')
+        minutes = request.data.get('minutes')
+        period = request.data.get('period')
+        time = f"{hours}:{minutes} {period}"
+
+        serializer.validated_data['time'] = time
+        serializer.save()
+        return JsonResponse(serializer.data, status=201)
+    return JsonResponse(serializer.errors, status=400)
 
 @api_view(['PUT'])
 def commentuser_update(request, id):
@@ -398,6 +403,18 @@ def commentuser_update(request, id):
         serializer.save()
         return JsonResponse(serializer.data, status=200)
     return JsonResponse(serializer.errors, status=400)
+
+
+
+@api_view(['DELETE'])
+def commentuser_delete(request, id):
+    try:
+        user_delete = Comment_user.objects.get(id=id)
+    except Comment_user.DoesNotExist:
+        return JsonResponse({'error': 'Comment not found'}, status=404)
+
+    user_delete.delete()
+    return JsonResponse({}, status=204)
 
 
 #User_auth

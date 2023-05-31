@@ -31,7 +31,7 @@ from restapp.views import (
     todo_detail,
     my_view, view_post, view_put, update_task, task_list, add_task, myprofile, create_profile, update_profile,
     delete_profile, comment_list, comment_detail, tasks_by_status, Commentuser_list, commentuser_add,
-    commentuser_update, user_list, user_register, update_user, user_login
+    commentuser_update, user_list, user_register, update_user, user_login, commentuser_delete
 
 )
 
@@ -73,12 +73,13 @@ urlpatterns = [
     path('comment/list/', Commentuser_list, name='Commentuser_list'),
     path('comment/insert/', commentuser_add, name='commentuser_add'),
     path('comment/update/<int:id>/', commentuser_update, name='commentuser_update'),
+    path('comment/delete/<int:id>/', commentuser_delete, name='commentuser_delete'),
 
     path('user/list/', user_list, name='user_list'),
     path('user/add/', user_register, name='user_register'),
     path('user/update/<int:task_id>/', update_user, name='update_user'),
     path('user/login/', user_login, name='user_login'),
-    path('gitcheck', user_login, name='user_login'),
+
 
     #path('register/superuser/', SuperuserRegistrationView.as_view(), name='superuser-registration'),
     #path('superusers/', admin_list, name='admin_list'),
