@@ -1,7 +1,7 @@
 from datetime import date
 from django.contrib.auth.models import User, AbstractUser, Group, Permission
 from django.db import models
-from django.utils import timezone,o
+from django.utils import timezone
 
 
 # Employee
