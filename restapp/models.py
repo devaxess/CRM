@@ -95,9 +95,8 @@ class Comment(models.Model):
 
 # comment sections
 class Comment_user(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
     task = models.TextField()
-    timestamp = models.DateTimeField()
+    time = models.CharField(max_length=10, null=True)
     last_insert = models.DateTimeField(default=timezone.now)
 
 

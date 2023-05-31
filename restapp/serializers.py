@@ -61,7 +61,7 @@ class TaskSerializer(serializers.ModelSerializer):
 class CommentuserSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment_user
-        fields = ['user', 'content', 'timestamp', 'last_insert']
+        fields = ['id', 'task', 'time', 'last_insert']
 
 
 # user
