@@ -1,7 +1,9 @@
 import json
 from datetime import datetime
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
 from django.http import JsonResponse
+from django.utils.crypto import get_random_string
 from django.views.decorators.http import require_GET
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework import generics, status
@@ -537,5 +539,48 @@ def admin_register(request):
     return JsonResponse({"message": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
+
+@api_view(['POST'])
+def forget_password_view(request):
+    email = request.data.get('email')
+    try:
+        user = CustomUser.objects.get(email=email)
+    except CustomUser.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
+
+    verification_code = get_random_string(length=6, allowed_chars='0123456789')
+
+    user.verification_code = verification_code
+    user.save()
+
+    send_mail(
+        'Password Reset Verification Code',
+        f'Your verification code is: {verification_code}',
+        'from@example.com',
+        [email],
+        fail_silently=False,
+    )
+
+    return JsonResponse({'message': 'Verification code sent'}, status=200)
+
+
+@api_view(['POST'])
+def reset_password_view(request):
+    email = request.data.get('email')
+    verification_code = request.data.get('verification_code')
+    new_password = request.data.get('new_password')
+
+    try:
+        user = CustomUser.objects.get(email=email)
+    except CustomUser.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
+
+    if user.verification_code != verification_code:
+        return JsonResponse({'error': 'Invalid verification code'}, status=400)
+
+    user.set_password(new_password)
+    user.save()
+
+    return JsonResponse({'message': 'Password reset successful'}, status=200)
 
 

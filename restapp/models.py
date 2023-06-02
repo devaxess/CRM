@@ -106,6 +106,7 @@ class CustomUser(AbstractUser):
     mobile_number = models.CharField(max_length=20)
     country_name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
+    verification_code = models.CharField(max_length=100, blank=True)
 
     groups = models.ManyToManyField(Group, related_name='custom_user_set')
     user_permissions = models.ManyToManyField(Permission, related_name='custom_user_set')

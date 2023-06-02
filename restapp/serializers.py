@@ -76,6 +76,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             password=validated_data['password'],
             country_code=validated_data['country_code'],
             mobile_number=validated_data['mobile_number'],
-            country_name=validated_data['country_name']
+            country_name=validated_data['country_name'],
+            verification_code=validated_data['verification_code']
         )
         return user

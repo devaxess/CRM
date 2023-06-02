@@ -31,7 +31,8 @@ from restapp.views import (
     todo_detail,
     my_view, view_post, view_put, update_task, task_list, add_task, myprofile, create_profile, update_profile,
     delete_profile, comment_list, comment_detail, tasks_by_status, Commentuser_list, commentuser_add,
-    commentuser_update, user_list, user_register, update_user, user_login, commentuser_delete, create_comment
+    commentuser_update, user_list, user_register, update_user, user_login, commentuser_delete, create_comment,
+    forget_password_view, reset_password_view
 
 )
 
@@ -83,5 +84,8 @@ urlpatterns = [
 
     #path('register/superuser/', SuperuserRegistrationView.as_view(), name='superuser-registration'),
     #path('superusers/', admin_list, name='admin_list'),
+
+    path('forgot/password/', forget_password_view, name='forget_password_reset'),
+    path('forgot/password/reset/', reset_password_view, name='reset_password_view'),
 
 ]
