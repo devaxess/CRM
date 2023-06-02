@@ -83,7 +83,5 @@ urlpatterns = [
 
     #path('register/superuser/', SuperuserRegistrationView.as_view(), name='superuser-registration'),
     #path('superusers/', admin_list, name='admin_list'),
-    #ajith
-
 
 ]
