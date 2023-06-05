@@ -30,8 +30,9 @@ from restapp.views import (
     todo_list,
     todo_detail,
     my_view, view_post, view_put, update_task, task_list, add_task, myprofile, create_profile, update_profile,
-    delete_profile, comment_list, comment_detail, tasks_by_status, Commentuser_list, commentuser_add,
-    commentuser_update, user_list, user_register, update_user, user_login, commentuser_delete, create_comment
+    delete_profile, comment_list, tasks_by_status, Commentuser_list, commentuser_add,
+    commentuser_update, user_list, user_register, update_user, user_login, commentuser_delete, create_comment,
+    forget_password_view, reset_password_view, admin_register, admin_list, delete_admin, update_admin, user_logout
 
 )
 
@@ -79,9 +80,18 @@ urlpatterns = [
     path('user/add/', user_register, name='user_register'),
     path('user/update/<int:task_id>/', update_user, name='update_user'),
     path('user/login/', user_login, name='user_login'),
+    path('logout/', user_logout, name='user_logout'),
 
 
-    #path('register/superuser/', SuperuserRegistrationView.as_view(), name='superuser-registration'),
-    #path('superusers/', admin_list, name='admin_list'),
+
+
+    path('superuser/', admin_list, name='admin_list'),
+    path('superuser/add/', admin_register, name='admin_register'),
+    path('superuser/update/<int:pk>/', update_admin, name='update_admin'),
+    path('superuser/delete/<int:pk>/', delete_admin, name='delete_admin'),
+
+
+    path('forgot/password/', forget_password_view, name='forget_password_reset'),
+    path('forgot/password/reset/', reset_password_view, name='reset_password_view'),
 
 ]

@@ -6,11 +6,10 @@ from django.views.decorators.http import require_GET
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework import generics, status
 from .serializers import EmployeeSerializer, SkillListSerializer, DomainSerializer, TodoSerializer, ProjectSerializer, \
-    TaskSerializer, MyProfileSerializer, CommentSerializer, CommentuserSerializer, UserRegistrationSerializer
+    TaskSerializer, MyProfileSerializer, CommentSerializer, CommentuserSerializer, UserRegistrationSerializer,SuperuserSerializer
 from .models import Employee, empskill, empdomain, Todo, Project, Task, MyProfile, Comment, Comment_user, CustomUser
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-
 
 
 
@@ -506,6 +505,21 @@ def user_login(request):
     else:
         return JsonResponse({'message': 'Method not allowed'}, status=405)
 
+@api_view(['POST'])
+def user_logout(request):
+    refresh_token = request.data.get('refresh_token')
+
+    if refresh_token:
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response({'message': 'Logout successful'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'message': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        return Response({'message': 'Refresh token is required'}, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 #Super or admin  User section
 @api_view(['GET'])
@@ -515,7 +529,6 @@ def admin_list(request):
         serializer = SuperuserSerializer(registrations, many=True)
         return JsonResponse(serializer.data, safe=False)
     return JsonResponse({"message": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
 
 @api_view(['POST'])
 def admin_register(request):
@@ -529,13 +542,83 @@ def admin_register(request):
         if User.objects.filter(email=email).exists():
             return JsonResponse({"message": "Email already taken"}, status=status.HTTP_400_BAD_REQUEST)
 
-        serializer = SuperuserSerializer(data=request.data)
+        # Set is_superuser=True when creating the user
+        data = request.data.copy()
+        data["is_superuser"] = True
+
+        serializer = SuperuserSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
-            return JsonResponse({"message": "User registration successful"}, status=status.HTTP_201_CREATED)
+            return JsonResponse({"message": "Superuser registration successful"}, status=status.HTTP_201_CREATED)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     return JsonResponse({"message": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+@api_view(['DELETE'])
+def delete_admin(request, pk):
+    try:
+        user = User.objects.get(pk=pk)
+    except User.DoesNotExist:
+        return JsonResponse({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    user.delete()
+    return JsonResponse({"message": "User deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
 
 
+@api_view(['PUT'])
+def update_admin(request, pk):
+    try:
+        user = User.objects.get(pk=pk)
+    except User.DoesNotExist:
+        return JsonResponse({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
+    serializer = SuperuserSerializer(user, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return JsonResponse(serializer.data, status=status.HTTP_200_OK)
+
+    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+#forgot and reset password
+@api_view(['POST'])
+def forget_password_view(request):
+    email = request.data.get('email')
+    try:
+        user = CustomUser.objects.get(email=email)
+    except CustomUser.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
+
+    verification_code = get_random_string(length=6, allowed_chars='0123456789')
+
+    user.verification_code = verification_code
+    user.save()
+
+    send_mail(
+        'Password Reset Verification Code',
+        f'Your verification code is: {verification_code}',
+        'from@example.com',
+        [email],
+        fail_silently=False,
+    )
+
+    return JsonResponse({'message': 'Verification code sent'}, status=200)
+
+
+@api_view(['POST'])
+def reset_password_view(request):
+    email = request.data.get('email')
+    verification_code = request.data.get('verification_code')
+    new_password = request.data.get('new_password')
+
+    try:
+        user = CustomUser.objects.get(email=email)
+    except CustomUser.DoesNotExist:
+        return JsonResponse({'error': 'User not found'}, status=404)
+
+    if user.verification_code != verification_code:
+        return JsonResponse({'error': 'Invalid verification code'}, status=400)
+
+    user.set_password(new_password)
+    user.save()
+
+    return JsonResponse({'message': 'Password reset successful'}, status=200)

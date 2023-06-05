@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Employee, empskill, empdomain, Todo, Project, MyProfile, Task, Comment, Comment_user, CustomUser
 
@@ -76,6 +77,17 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
             password=validated_data['password'],
             country_code=validated_data['country_code'],
             mobile_number=validated_data['mobile_number'],
-            country_name=validated_data['country_name']
+            country_name=validated_data['country_name'],
         )
+        return user
+
+class SuperuserSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ['id','username', 'email', 'password', 'is_superuser']
+
+    def create(self, validated_data):
+        user = User.objects.create_superuser(**validated_data)
         return user
