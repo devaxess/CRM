@@ -31,8 +31,8 @@ from restapp.views import (
     todo_detail,
     my_view, view_post, view_put, update_task, task_list, add_task, myprofile, create_profile, update_profile,
     delete_profile, comment_list, tasks_by_status, Commentuser_list, commentuser_add,
-    commentuser_update, user_list, user_register, update_user, user_login, commentuser_delete, create_comment,
-    forget_password_view, reset_password_view, admin_register, admin_list, delete_admin, update_admin, user_logout
+    commentuser_update, user_list, user_register, update_user, user_login, user_logout,commentuser_delete, create_comment,
+    forget_password_view, reset_password_view, admin_register, admin_list, delete_admin , update_admin
 
 )
 
