@@ -3,11 +3,11 @@ from datetime import datetime
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET
-from rest_framework.decorators import api_view, authentication_classes, permission_classes
+from rest_framework.decorators import api_view, authentication_classes, permission_classes, APIView
 from rest_framework import generics, status
 from .serializers import EmployeeSerializer, SkillListSerializer, DomainSerializer, TodoSerializer, ProjectSerializer, \
-    TaskSerializer, MyProfileSerializer, CommentSerializer, CommentuserSerializer, UserRegistrationSerializer,SuperuserSerializer
-from .models import Employee, empskill, empdomain, Todo, Project, Task, MyProfile, Comment, Comment_user, UserRegistration
+    TaskSerializer, MyProfileSerializer, CommentSerializer, CommentuserSerializer, UserRegistrationSerializer,SuperuserSerializer,LoginSerializer
+from .models import Employee, empskill, empdomain, Todo, Project, Task, MyProfile, Comment, Comment_user,Users
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
@@ -442,7 +442,7 @@ def commentuser_delete(request, id):
 @api_view(['GET'])
 def user_list(request):
     if request.method == 'GET':
-        registrations = UserRegistration.objects.all()
+        registrations = Users.objects.all()
         serializer = UserRegistrationSerializer(registrations, many=True)
         return JsonResponse(serializer.data, safe=False)
     return JsonResponse({"message": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -451,16 +451,16 @@ def user_list(request):
 @api_view(['POST'])
 def user_register(request):
     if request.method == 'POST':
-        username = request.data.get("username")
+       # username = request.data.get("username")
         email = request.data.get("email")
         password = request.data.get("password")
         confirm_password = request.data.get("confirm_password")
 
         if password != confirm_password:
             return JsonResponse({"message": "Passwords do not match"}, status=status.HTTP_400_BAD_REQUEST)
-
+        '''
         if User.objects.filter(username=username).exists():
-            return JsonResponse({"message": "Username already taken"}, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse({"message": "Username already taken"}, status=status.HTTP_400_BAD_REQUEST) '''
 
         if User.objects.filter(email=email).exists():
             return JsonResponse({"message": "Email already taken"}, status=status.HTTP_400_BAD_REQUEST)
@@ -472,10 +472,11 @@ def user_register(request):
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     return JsonResponse({"message": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
+
 @api_view(['PUT'])
 def update_user(request, task_id):
     try:
-        user = UserRegistration.objects.get(id=task_id)
+        user = Users.objects.get(id=task_id)
     except CustomUser.DoesNotExist:
         return JsonResponse({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -484,41 +485,6 @@ def update_user(request, task_id):
         serializer.save()
         return JsonResponse(serializer.data)
     return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-
-#User_login api
-
-def user_login(request):
-    if request.method == 'POST':
-        email = request.POST.get('email')
-        password = request.POST.get('password')
-
-        user = UserRegistration(request, username=email, password=password)
-
-        if user is not None:
-            refresh = RefreshToken.for_user(user)
-            access_token = refresh.access_token
-            return JsonResponse({'access_token': str(access_token)}, status=200)
-        else:
-            return JsonResponse({'message': 'Invalid email or password'}, status=401)
-    else:
-        return JsonResponse({'message': 'Method not allowed'}, status=405)
-
-@api_view(['POST'])
-def user_logout(request):
-    refresh_token = request.data.get('refresh_token')
-
-    if refresh_token:
-        try:
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-            return Response({'message': 'Logout successful'}, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({'message': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
-    else:
-        return Response({'message': 'Refresh token is required'}, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 #Super or admin  User section
@@ -577,6 +543,32 @@ def update_admin(request, pk):
         return JsonResponse(serializer.data, status=status.HTTP_200_OK)
 
     return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+#user login and logout
+class LoginView(APIView):
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        email = serializer.validated_data['email']
+        password = serializer.validated_data['password']
+
+        try:
+            user = Users.objects.get(email=email)
+        except Users.DoesNotExist:
+            return JsonResponse({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+        if user.check_password(password):
+            # Perform login logic here, if required
+            return JsonResponse({'message': 'Login successful'}, status=status.HTTP_200_OK)
+        else:
+            return JsonResponse({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+
+class LogoutView(APIView):
+    def post(self, request):
+        # Perform logout logic here, if required
+        return JsonResponse({'message': 'Logout successful'}, status=status.HTTP_200_OK)
 
 
 #forgot and reset password

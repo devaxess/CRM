@@ -1,3 +1,4 @@
+import hashlib
 from datetime import date
 from django.contrib.auth.models import User, AbstractUser, Group, Permission
 from django.db import models
@@ -46,6 +47,7 @@ class Project(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
     url = models.URLField()
+    myprofile_id = models.ForeignKey('MyProfile', on_delete=models.CASCADE, default=1)
 
     def __str__(self):
         return self.title
@@ -107,3 +109,22 @@ class UserRegistration(AbstractUser):
 
     groups = models.ManyToManyField(Group, related_name='custom_user_set')
     user_permissions = models.ManyToManyField(Permission, related_name='custom_user_set')
+
+class Users(models.Model):
+    email = models.EmailField(unique=True)
+    mobile_number = models.CharField(max_length=20)
+    password = models.CharField(max_length=255)
+    # Add other fields as needed
+
+    def save(self, *args, **kwargs):
+        self.password = self.hash_password(self.password)
+        super(Users, self).save(*args, **kwargs)
+
+    def hash_password(self, raw_password):
+        # Hash the password using hashlib
+        hash_object = hashlib.sha256(raw_password.encode())
+        return hash_object.hexdigest()
+
+    def check_password(self, raw_password):
+        hashed_password = self.hash_password(raw_password)
+        return self.password == hashed_password
