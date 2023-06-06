@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework import generics, status
 from .serializers import EmployeeSerializer, SkillListSerializer, DomainSerializer, TodoSerializer, ProjectSerializer, \
     TaskSerializer, MyProfileSerializer, CommentSerializer, CommentuserSerializer, UserRegistrationSerializer,SuperuserSerializer
-from .models import Employee, empskill, empdomain, Todo, Project, Task, MyProfile, Comment, Comment_user, CustomUser
+from .models import Employee, empskill, empdomain, Todo, Project, Task, MyProfile, Comment, Comment_user, UserRegistration
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
@@ -442,7 +442,7 @@ def commentuser_delete(request, id):
 @api_view(['GET'])
 def user_list(request):
     if request.method == 'GET':
-        registrations = CustomUser.objects.all()
+        registrations = UserRegistration.objects.all()
         serializer = UserRegistrationSerializer(registrations, many=True)
         return JsonResponse(serializer.data, safe=False)
     return JsonResponse({"message": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -475,7 +475,7 @@ def user_register(request):
 @api_view(['PUT'])
 def update_user(request, task_id):
     try:
-        user = CustomUser.objects.get(id=task_id)
+        user = UserRegistration.objects.get(id=task_id)
     except CustomUser.DoesNotExist:
         return JsonResponse({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -494,7 +494,7 @@ def user_login(request):
         email = request.POST.get('email')
         password = request.POST.get('password')
 
-        user = CustomUser(request, username=email, password=password)
+        user = UserRegistration(request, username=email, password=password)
 
         if user is not None:
             refresh = RefreshToken.for_user(user)

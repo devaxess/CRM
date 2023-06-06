@@ -101,10 +101,8 @@ class Comment_user(models.Model):
 
 
 # user register
-class CustomUser(AbstractUser):
-    country_code = models.CharField(max_length=5)
+class UserRegistration(AbstractUser):
     mobile_number = models.CharField(max_length=20)
-    country_name = models.CharField(max_length=100)
     email = models.EmailField(unique=True)
 
     groups = models.ManyToManyField(Group, related_name='custom_user_set')

@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Employee, empskill, empdomain, Todo, Project, MyProfile, Task, Comment, Comment_user, CustomUser
+from .models import Employee, empskill, empdomain, Todo, Project, MyProfile, Task, Comment, Comment_user, UserRegistration
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
@@ -64,20 +64,18 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
     class Meta:
-        model = CustomUser
-        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'country_code', 'mobile_number', 'country_name',
+        model = UserRegistration
+        fields = ['id', 'username', 'first_name', 'last_name', 'email', 'mobile_number',
                   'password', 'date_joined']
 
     def create(self, validated_data):
-        user = CustomUser.objects.create_user(
+        user = UserRegistration.objects.create_user(
             username=validated_data['username'],
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
             email=validated_data['email'],
             password=validated_data['password'],
-            country_code=validated_data['country_code'],
             mobile_number=validated_data['mobile_number'],
-            country_name=validated_data['country_name'],
         )
         return user
 
