@@ -36,7 +36,7 @@ class ProjectSerializer(serializers.ModelSerializer):
 class MyProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = MyProfile
-        fields = ['name', 'date_of_birth', 'email_address', 'role', 'age', 'specification', 'total_earned', 'skills',
+        fields = ['id', 'name', 'date_of_birth', 'email_address', 'role', 'age', 'specification', 'total_earned', 'skills',
                   'job', 'attachments', 'job_success_rate', 'hours_worked', 'hourly_rate']
 
 

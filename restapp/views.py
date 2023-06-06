@@ -219,9 +219,9 @@ def view_put(request, id):
 #Myprofile
 @api_view(['GET'])
 def myprofile(request):
-    profile = MyProfile.objects.first()
-    serializer = MyProfileSerializer(profile)
-    return JsonResponse(serializer.data)
+    profile = MyProfile.objects.all()
+    serializer = MyProfileSerializer(profile, many=True)
+    return JsonResponse(serializer.data, safe=False)
 
 @api_view(['POST'])
 def create_profile(request):
