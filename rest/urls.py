@@ -31,10 +31,10 @@ from restapp.views import (
     todo_detail,
     my_view, view_post, view_put, update_task, task_list, add_task, myprofile, create_profile, update_profile,
     delete_profile, comment_list, tasks_by_status, Commentuser_list, commentuser_add,
-    commentuser_update, user_list, user_register, update_user,  commentuser_delete,
+    commentuser_update, user_list, user_register, update_user, commentuser_delete,
     create_comment,
     forget_password_view, reset_password_view, admin_register, admin_list, delete_admin, update_admin, LoginView,
-    LogoutView
+    LogoutView, myprofile_view
 
 )
 
@@ -62,6 +62,7 @@ urlpatterns = [
     path('project/update/<int:id>/', view_put, name='view_put'),
 
     path('myprofile/', myprofile, name='myprofile'),
+    path('myprofile/<int:id>/',myprofile_view,name="myprofile_view" ),
     path('myprofile/create/', create_profile, name='create_profile'),
     path('myprofile/update/<int:pk>/', update_profile, name='update_profile'),
     path('myprofile/delete/<int:pk>/', delete_profile, name='delete_profile'),

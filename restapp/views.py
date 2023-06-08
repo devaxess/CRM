@@ -223,6 +223,13 @@ def myprofile(request):
     serializer = MyProfileSerializer(profile, many=True)
     return JsonResponse(serializer.data, safe=False)
 
+@api_view(['GET'])
+def myprofile_view(request, id):
+    profile = MyProfile.objects.get(id=id)
+    serializer = MyProfileSerializer(profile)
+    return JsonResponse(serializer.data, safe=False)
+
+
 @api_view(['POST'])
 def create_profile(request):
     serializer = MyProfileSerializer(data=request.data)
@@ -230,6 +237,7 @@ def create_profile(request):
         serializer.save()
         return JsonResponse(serializer.data, status=201)
     return JsonResponse(serializer.errors, status=400)
+
 
 @api_view(['PUT'])
 def update_profile(request, pk):
