@@ -34,7 +34,7 @@ from restapp.views import (
     commentuser_update, user_list, user_register, update_user, commentuser_delete,
     create_comment,
     forget_password_view, reset_password_view, admin_register, admin_list, delete_admin, update_admin, LoginView,
-    LogoutView, myprofile_view
+    LogoutView, myprofile_view, qa_list, qa_detail
 
 )
 
@@ -91,8 +91,11 @@ urlpatterns = [
     path('superuser/update/<int:pk>/', update_admin, name='update_admin'),
     path('superuser/delete/<int:pk>/', delete_admin, name='delete_admin'),
 
-
     path('forgot/password/', forget_password_view, name='forget_password_reset'),
     path('forgot/password/reset/', reset_password_view, name='reset_password_view'),
+
+    path('qa/', qa_list, name='qa-list'),
+    path('qa/<int:pk>/', qa_detail, name='qa-detail'),
+
 
 ]

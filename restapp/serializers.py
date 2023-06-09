@@ -1,6 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Employee, empskill, empdomain, Todo, Project, MyProfile, Task, Comment, Comment_user,Users
+from .models import Employee, empskill, empdomain, Todo, Project, MyProfile, Task, Comment, Comment_user, Users, Qa
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
@@ -83,3 +83,23 @@ class SuperuserSerializer(serializers.ModelSerializer):
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField()
+
+
+class QaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Qa
+        fields = [
+            'id',
+            'candidate_name',
+            'mobile_number',
+            'email_id',
+            'skills',
+            'domain',
+            'Total_exp',
+            'relevant_exp',
+            'location',
+            'current_ctc',
+            'expected_ctc',
+            'notice_period',
+            'feedback',
+        ]

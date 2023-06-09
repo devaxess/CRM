@@ -53,6 +53,26 @@ class Project(models.Model):
         return self.title
 
 
+
+class Users(models.Model):
+    email = models.EmailField(unique=True)
+    mobile_number = models.CharField(max_length=20)
+    password = models.CharField(max_length=255)
+    # Add other fields as needed
+
+    def save(self, *args, **kwargs):
+        self.password = self.hash_password(self.password)
+        super(Users, self).save(*args, **kwargs)
+
+    def hash_password(self, raw_password):
+        # Hash the password using hashlib
+        hash_object = hashlib.sha256(raw_password.encode())
+        return hash_object.hexdigest()
+
+    def check_password(self, raw_password):
+        hashed_password = self.hash_password(raw_password)
+        return self.password == hashed_password
+
 # Myprofile
 class MyProfile(models.Model):
     name = models.CharField(max_length=100)
@@ -105,26 +125,25 @@ class Comment_user(models.Model):
 # user register
 class UserRegistration(AbstractUser):
     mobile_number = models.CharField(max_length=20)
-    email = models.EmailField(unique=True)
+    email         = models.EmailField(unique=True)
 
-    groups = models.ManyToManyField(Group, related_name='custom_user_set')
+    groups        = models.ManyToManyField(Group, related_name='custom_user_set')
     user_permissions = models.ManyToManyField(Permission, related_name='custom_user_set')
 
-class Users(models.Model):
-    email = models.EmailField(unique=True)
-    mobile_number = models.CharField(max_length=20)
-    password = models.CharField(max_length=255)
-    # Add other fields as needed
 
-    def save(self, *args, **kwargs):
-        self.password = self.hash_password(self.password)
-        super(Users, self).save(*args, **kwargs)
+#QA
+class Qa(models.Model):
 
-    def hash_password(self, raw_password):
-        # Hash the password using hashlib
-        hash_object = hashlib.sha256(raw_password.encode())
-        return hash_object.hexdigest()
+    candidate_name = models.CharField(max_length=255)
+    mobile_number  = models.CharField(max_length=20)
+    email_id       = models.EmailField()
+    skills         = models.CharField(max_length=255)
+    domain         = models.CharField(max_length=255)
+    Total_exp      = models.IntegerField()
+    relevant_exp   = models.IntegerField()
+    location       = models.CharField(max_length=255)
+    current_ctc    = models.DecimalField(max_digits=10, decimal_places=2)
+    expected_ctc   = models.DecimalField(max_digits=10, decimal_places=2)
+    notice_period  = models.IntegerField()
+    feedback       = models.TextField()
 
-    def check_password(self, raw_password):
-        hashed_password = self.hash_password(raw_password)
-        return self.password == hashed_password
