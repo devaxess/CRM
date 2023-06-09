@@ -37,7 +37,7 @@ class MyProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = MyProfile
         fields = ['id', 'name', 'date_of_birth', 'email_address', 'role', 'age', 'specification', 'total_earned', 'skills',
-                  'job', 'attachments', 'job_success_rate', 'hours_worked', 'hourly_rate']
+                  'job', 'attachments', 'job_success_rate', 'hours_worked', 'hourly_rate','user_id']
 
 
 class CommentSerializer(serializers.ModelSerializer):

@@ -75,6 +75,7 @@ class Users(models.Model):
 
 # Myprofile
 class MyProfile(models.Model):
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=100)
     date_of_birth = models.DateField()
     email_address = models.EmailField()
@@ -107,15 +108,16 @@ class Task(models.Model):
 
 
 class Comment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    sender = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='sent_comments', null=True)
+    receiver = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='received_comments', null=True)
     content = models.TextField()
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return f"Comment by {self.user.username} at {self.created_at}"
+        return f"Comment by {self.sender.username} at {self.created_at}"
 
 
-# comment sections
+# comment sections workbanch
 class Comment_user(models.Model):
     task = models.TextField()
     time = models.CharField(max_length=10, null=True)
@@ -133,7 +135,6 @@ class UserRegistration(AbstractUser):
 
 #QA
 class Qa(models.Model):
-
     candidate_name = models.CharField(max_length=255)
     mobile_number  = models.CharField(max_length=20)
     email_id       = models.EmailField()
