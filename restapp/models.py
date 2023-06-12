@@ -117,7 +117,7 @@ class Comment(models.Model):
         return f"Comment by {self.sender.username} at {self.created_at}"
 
 
-# comment sections workbanch
+# comment sections work_banch
 class Comment_user(models.Model):
     task = models.TextField()
     time = models.CharField(max_length=10, null=True)
