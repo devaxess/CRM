@@ -54,6 +54,8 @@ class Project(models.Model):
 
 
 
+# user register
+
 class Users(models.Model):
     email = models.EmailField(unique=True)
     mobile_number = models.CharField(max_length=20)
@@ -75,7 +77,7 @@ class Users(models.Model):
 
 # Myprofile
 class MyProfile(models.Model):
-    user_id = models.ForeignKey(Users, on_delete=models.CASCADE, null=True)
+    user_id = models.ForeignKey(Users, on_delete=models.CASCADE,null=True)
     name = models.CharField(max_length=100)
     date_of_birth = models.DateField()
     email_address = models.EmailField()
@@ -108,13 +110,16 @@ class Task(models.Model):
 
 
 class Comment(models.Model):
-    sender = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='sent_comments', null=True)
-    receiver = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='received_comments', null=True)
+    sender_id = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='sent_comments', null=True)
+    receiver_id= models.ForeignKey(Users, on_delete=models.CASCADE, related_name='received_comments', null=True)
     content = models.TextField()
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
-        return f"Comment by {self.sender.username} at {self.created_at}"
+        return f"Comment by {self.sender_id.username} at {self.created_at}"
+
+    def __str__(self):
+        return f"Comment received by {self.receiver_id.username} at {self.created_at}"
 
 
 # comment sections work_banch

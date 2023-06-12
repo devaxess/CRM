@@ -345,7 +345,7 @@ def tasks_by_status(request):
 
 
 
-@api_view(['GET', 'POST'])
+@api_view(['GET'])
 def comment_list(request):
     if request.method == 'GET':
         comments = Comment.objects.all()
@@ -358,30 +358,39 @@ def comment_list(request):
             return JsonResponse(serializer.data, status=201)
         return JsonResponse(serializer.errors, status=400)
 
-# just use
 
-@api_view(['POST'])
-@authentication_classes([TokenAuthentication])
-@permission_classes([IsAuthenticated])
-def create_comment(request, task_id):
-    try:
-        task = Task.objects.get(id=task_id)
-    except Task.DoesNotExist:
-        return JsonResponse({'error': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
+class CommentCreateView(APIView):
+    def post(self, request, task_id):
+        # Retrieve the Task instance
+        try:
+            task = Task.objects.get(id=task_id)
+        except Task.DoesNotExist:
+            return Response({'error': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    serializer = CommentSerializer(data=request.data)
-    if serializer.is_valid():
-        comment = serializer.save(user=request.user)
+        sender_id = request.user.id
+        sender_id = Users.objects.get(id=sender_id)
+
+        receiver_id = request.data.get('receiver_id')
+        content = request.data.get('content')
+
+        comment = Comment(
+            sender_id=sender_id,
+            receiver_id=receiver_id,
+            content=content,
+            created_at=timezone.now()
+        )
+
+        comment.save()
         task.comments.add(comment)
-        task.save()
-        return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
-    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'message': 'Comment added successfully'}, status=status.HTTP_201_CREATED)
+
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-def comment_detail(request, pk):
+def comment_detail(request, id):
     try:
-        comment = Comment.objects.get(pk=pk)
+        comment = Comment.objects.get(pk=id)
     except Comment.DoesNotExist:
         return JsonResponse({'error': 'Comment not found'}, status=404)
 

@@ -32,9 +32,8 @@ from restapp.views import (
     my_view, view_post, view_put, update_task, task_list, add_task, myprofile, create_profile, update_profile,
     delete_profile, comment_list, tasks_by_status, Commentuser_list, commentuser_add,
     commentuser_update, user_list, user_register, update_user, commentuser_delete,
-    create_comment,
     forget_password_view, reset_password_view, admin_register, admin_list, delete_admin, update_admin, LoginView,
-    LogoutView, myprofile_view, qa_list, qa_detail
+    LogoutView, myprofile_view, qa_list, qa_detail, comment_detail, CommentCreateView
 
 )
 
@@ -72,7 +71,8 @@ urlpatterns = [
     path('daily_task/update/<int:task_id>/', update_task, name='update_task'),
     path('daily_task/status/', tasks_by_status, name='tasks_by_status'),
     path('task/comments/', comment_list, name='comment_list'),
-    path('task/comments/<int:task_id>/', create_comment, name='create_comment'),
+    path('tasks/<int:task_id>/comments/', CommentCreateView.as_view(), name='comment-create'),
+    path('task/comments/<int:id>/', comment_detail, name=' comment_detail'),
 
     path('comment/list/', Commentuser_list, name='Commentuser_list'),
     path('comment/insert/', commentuser_add, name='commentuser_add'),

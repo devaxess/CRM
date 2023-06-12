@@ -43,7 +43,7 @@ class MyProfileSerializer(serializers.ModelSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
-        fields = ['id', 'sender','receiver', 'content', 'created_at']
+        fields = ['id', 'sender_id','receiver_id', 'content', 'created_at']
 
 class TaskSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
