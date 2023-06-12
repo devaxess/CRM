@@ -351,13 +351,6 @@ def comment_list(request):
         comments = Comment.objects.all()
         serializer = CommentSerializer(comments, many=True)
         return JsonResponse(serializer.data, safe=False)
-    elif request.method == 'POST':
-        serializer = CommentSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data, status=201)
-        return JsonResponse(serializer.errors, status=400)
-
 
 class CommentCreateView(APIView):
     def post(self, request, task_id):

@@ -71,7 +71,7 @@ urlpatterns = [
     path('daily_task/update/<int:task_id>/', update_task, name='update_task'),
     path('daily_task/status/', tasks_by_status, name='tasks_by_status'),
     path('task/comments/', comment_list, name='comment_list'),
-    path('tasks/<int:task_id>/comments/', CommentCreateView.as_view(), name='comment-create'),
+    path('task/comments/insert/<int:task_id>/', CommentCreateView.as_view(), name='comment-create'),
     path('task/comments/<int:id>/', comment_detail, name=' comment_detail'),
 
     path('comment/list/', Commentuser_list, name='Commentuser_list'),
