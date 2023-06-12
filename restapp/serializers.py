@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Employee, empskill, empdomain, Todo, Project, MyProfile, Task, Comment, Comment_user, Users, Qa
+from .models import Employee, empskill, empdomain, Todo, Project, MyProfile, Task, Comment, Comment_user, Users, Qa, \
+    Enquiry
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
@@ -102,4 +103,23 @@ class QaSerializer(serializers.ModelSerializer):
             'expected_ctc',
             'notice_period',
             'feedback',
+        ]
+
+class EnquirySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Enquiry
+        fields = [
+            'id',
+            'name',
+            'location',
+            'source_of_enquiry',
+            'contacted_date',
+            'followup_date',
+            'contact_number',
+            'comments',
+            'personal_details',
+            'handled_by',
+            'office_visit',
+            'status',
+            'feed_back',
         ]

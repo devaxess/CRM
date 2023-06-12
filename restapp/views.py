@@ -6,9 +6,9 @@ from django.views.decorators.http import require_GET
 from rest_framework.decorators import api_view, authentication_classes, permission_classes, APIView
 from rest_framework import generics, status
 from .serializers import EmployeeSerializer, SkillListSerializer, DomainSerializer, TodoSerializer, ProjectSerializer, \
-    TaskSerializer, MyProfileSerializer, CommentSerializer, CommentuserSerializer, UserRegistrationSerializer,\
+    TaskSerializer, MyProfileSerializer, CommentSerializer,EnquirySerializer, CommentuserSerializer, UserRegistrationSerializer,\
      QaSerializer , SuperuserSerializer,LoginSerializer
-from .models import Employee, empskill, empdomain, Todo, Project, Task, MyProfile, Comment, Comment_user,Users,Qa
+from .models import Employee, empskill, empdomain, Todo, Project, Task, MyProfile, Comment, Comment_user,Users,Qa,Enquiry
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
@@ -627,6 +627,7 @@ def reset_password_view(request):
     return JsonResponse({'message': 'Password reset successful'}, status=200)
 
 
+#QA list
 @api_view(['GET', 'POST'])
 def qa_list(request):
     if request.method == 'GET':
@@ -653,6 +654,42 @@ def qa_detail(request, pk):
         return JsonResponse(serializer.data)
     elif request.method == 'PUT':
         serializer = QaSerializer(registration, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'DELETE':
+        registration.delete()
+        return JsonResponse(status=status.HTTP_204_NO_CONTENT)
+
+# Enquiry list
+
+@api_view(['GET', 'POST'])
+def enquiry_list(request):
+    if request.method == 'GET':
+        registrations = Enquiry.objects.all()
+        serializer = EnquirySerializer(registrations, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    elif request.method == 'POST':
+        serializer = EnquirySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def enquiry_detail(request, pk):
+    try:
+        registration = Enquiry.objects.get(pk=pk)
+    except Enquiry.DoesNotExist:
+        return JsonResponse({"message": "Registration not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = EnquirySerializer(registration)
+        return JsonResponse(serializer.data)
+    elif request.method == 'PUT':
+        serializer = EnquirySerializer(registration, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return JsonResponse(serializer.data)

@@ -96,7 +96,7 @@ class MyProfile(models.Model):
         return self.name
 
 
-# daily_task
+# daily_task ;
 class Task(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()
@@ -152,4 +152,23 @@ class Qa(models.Model):
     expected_ctc   = models.DecimalField(max_digits=10, decimal_places=2)
     notice_period  = models.IntegerField()
     feedback       = models.TextField()
+
+
+
+class Enquiry(models.Model):
+    name              = models.CharField(max_length=255)
+    location          = models.CharField(max_length=255)
+    source_of_enquiry = models.CharField(max_length=255)
+    contacted_date    = models.DateField(null=True, blank=True)
+    followup_date     = models.DateField(null=True, blank=True)
+    contact_number    = models.CharField(max_length=20)
+    comments          = models.TextField()
+    personal_details  = models.TextField()
+    handled_by        = models.CharField(max_length=255)
+    office_visit      = models.BooleanField(default=False)
+    status            = models.CharField(max_length=255)
+    feed_back         = models.TextField()
+
+    def __str__(self):
+        return self.name
 

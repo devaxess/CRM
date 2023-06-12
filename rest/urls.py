@@ -33,7 +33,7 @@ from restapp.views import (
     delete_profile, comment_list, tasks_by_status, Commentuser_list, commentuser_add,
     commentuser_update, user_list, user_register, update_user, commentuser_delete,
     forget_password_view, reset_password_view, admin_register, admin_list, delete_admin, update_admin, LoginView,
-    LogoutView, myprofile_view, qa_list, qa_detail, comment_detail, CommentCreateView
+    LogoutView, myprofile_view, qa_list, qa_detail, comment_detail, CommentCreateView, enquiry_list, enquiry_detail
 
 )
 
@@ -96,6 +96,9 @@ urlpatterns = [
 
     path('qa/', qa_list, name='qa-list'),
     path('qa/<int:pk>/', qa_detail, name='qa-detail'),
+
+    path('enquiry/', enquiry_list, name='enquiry_list'),
+    path('enquiry/<int:pk>/', enquiry_detail, name='enquiry_detail'),
 
 
 ]
