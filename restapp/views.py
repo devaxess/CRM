@@ -578,7 +578,6 @@ class LoginView(APIView):
 
 class LogoutView(APIView):
     def post(self, request):
-        # Perform logout logic here, if required
         return JsonResponse({'message': 'Logout successful'}, status=status.HTTP_200_OK)
 
 
@@ -587,7 +586,7 @@ class LogoutView(APIView):
 def forget_password_view(request):
     email = request.data.get('email')
     try:
-        user = CustomUser.objects.get(email=email)
+        user = Users.objects.get(email=email)
     except CustomUser.DoesNotExist:
         return JsonResponse({'error': 'User not found'}, status=404)
 
@@ -614,7 +613,7 @@ def reset_password_view(request):
     new_password = request.data.get('new_password')
 
     try:
-        user = CustomUser.objects.get(email=email)
+        user = Users.objects.get(email=email)
     except CustomUser.DoesNotExist:
         return JsonResponse({'error': 'User not found'}, status=404)
 

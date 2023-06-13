@@ -91,17 +91,17 @@ class QaSerializer(serializers.ModelSerializer):
         model = Qa
         fields = [
             'id',
-            'candidate_name',
+            'name',
             'mobile_number',
             'email_id',
             'skills',
             'domain',
-            'Total_exp',
+            'experience',
             'relevant_exp',
             'location',
-            'current_ctc',
-            'expected_ctc',
-            'notice_period',
+            'c_ctc',
+            'e_ctc',
+            'period',
             'feedback',
         ]
 

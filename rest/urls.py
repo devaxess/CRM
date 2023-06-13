@@ -100,5 +100,4 @@ urlpatterns = [
     path('enquiry/', enquiry_list, name='enquiry_list'),
     path('enquiry/<int:pk>/', enquiry_detail, name='enquiry_detail'),
 
-
 ]
