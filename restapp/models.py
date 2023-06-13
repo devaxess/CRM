@@ -129,34 +129,34 @@ class Comment_user(models.Model):
 
 #QA
 class Qa(models.Model):
-    name           = models.CharField(max_length=255)
-    number         = models.CharField(max_length=20)
-    email_id       = models.EmailField()
-    skills         = models.CharField(max_length=255)
-    domain         = models.CharField(max_length=255)
-    experience     = models.IntegerField()
-    relevant_exp   = models.IntegerField()
-    location       = models.CharField(max_length=255)
-    c_ctc          = models.DecimalField(max_digits=10, decimal_places=2)
-    e_ctc          = models.DecimalField(max_digits=10, decimal_places=2)
-    period         = models.IntegerField()
-    feedback       = models.TextField()
+    Name           = models.CharField(max_length=255)
+    Number         = models.CharField(max_length=20)
+    Emailid       = models.EmailField()
+    Skills         = models.CharField(max_length=255)
+    Domain         = models.CharField(max_length=255)
+    Experience     = models.IntegerField()
+    Relevantexperience    = models.IntegerField()
+    Location       = models.CharField(max_length=255)
+    Currentctc     = models.DecimalField(max_digits=10, decimal_places=2)
+    Expectedctc          = models.DecimalField(max_digits=10, decimal_places=2)
+    Period         = models.IntegerField()
+    Feedback       = models.TextField()
 
 
 #enquiry
 class Enquiry(models.Model):
-    name              = models.CharField(max_length=255)
-    location          = models.CharField(max_length=255)
-    source_of_enquiry = models.CharField(max_length=255)
-    contacted_date    = models.DateField(null=True, blank=True)
-    followup_date     = models.DateField(null=True, blank=True)
-    contact_number    = models.CharField(max_length=20)
-    comments          = models.TextField()
-    personal_details  = models.TextField()
-    handled_by        = models.CharField(max_length=255)
-    office_visit      = models.BooleanField(default=False)
-    status            = models.CharField(max_length=255)
-    feed_back         = models.TextField()
+    Name              = models.CharField(max_length=255)
+    Location          = models.CharField(max_length=255)
+    Sourceofenquiry = models.CharField(max_length=255)
+    Contacteddate    = models.DateField(null=True, blank=True)
+    Followupdate     = models.DateField(null=True, blank=True)
+    Number           = models.CharField(max_length=20)
+    Comments          = models.TextField()
+    Personaldetails  = models.TextField()
+    Handledby        = models.CharField(max_length=255)
+    Officevisit      = models.BooleanField(default=False)
+    Status            = models.CharField(max_length=255)
+    Feedback         = models.TextField()
 
     def __str__(self):
         return self.name

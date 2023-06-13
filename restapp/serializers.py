@@ -91,18 +91,18 @@ class QaSerializer(serializers.ModelSerializer):
         model = Qa
         fields = [
             'id',
-            'name',
-            'number',
-            'email_id',
-            'skills',
-            'domain',
-            'experience',
-            'relevant_exp',
-            'location',
-            'c_ctc',
-            'e_ctc',
-            'period',
-            'feedback',
+            'Name',
+            'Number',
+            'Emailid',
+            'Skills',
+            'Domain',
+            'Experience',
+            'Relevantexperience',
+            'Location',
+            'Currentctc',
+            'Expectedctc',
+            'Period',
+            'Feedback',
         ]
 
 class EnquirySerializer(serializers.ModelSerializer):
@@ -110,16 +110,27 @@ class EnquirySerializer(serializers.ModelSerializer):
         model = Enquiry
         fields = [
             'id',
-            'name',
-            'location',
-            'source_of_enquiry',
-            'contacted_date',
-            'followup_date',
-            'contact_number',
-            'comments',
-            'personal_details',
-            'handled_by',
-            'office_visit',
-            'status',
-            'feed_back',
+            'Name',
+            'Location',
+            'Sourceofenquiry',
+            'Contacteddate',
+            'Followupdate',
+            'Number',
+            'Comments',
+            'Personaldetails',
+            'Handledby',
+            'Officevisit',
+            'Status',
+            'Feedback',
         ]
+
+
+
+
+
+
+
+
+
+
+
