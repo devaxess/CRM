@@ -92,7 +92,7 @@ class QaSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'name',
-            'mobile_number',
+            'number',
             'email_id',
             'skills',
             'domain',
