@@ -34,7 +34,7 @@ from restapp.views import (
     commentuser_update, user_list, user_register, update_user, commentuser_delete,
     forget_password_view, reset_password_view, admin_register, admin_list, delete_admin, update_admin, LoginView,
     LogoutView, myprofile_view, qa_list, qa_detail, comment_detail, CommentCreateView, enquiry_list, enquiry_detail,
-    create_todo, user_task, list_alltask
+    create_todo, user_task, list_alltask, verify_verification_code
 
 )
 
@@ -102,8 +102,9 @@ urlpatterns = [
     path('superuser/update/<int:pk>/', update_admin, name='update_admin'),
     path('superuser/delete/<int:pk>/', delete_admin, name='delete_admin'),
 
-#user forgot and reset
+#user forgot , verification and reset
     path('forgot/password/', forget_password_view, name='forget_password_reset'),
+    path('verify_verification_code/', verify_verification_code, name='verify_verification_code'),
     path('forgot/password/reset/', reset_password_view, name='reset_password_view'),
 
 #QA info
@@ -113,7 +114,5 @@ urlpatterns = [
 #candidate info
     path('enquiry/', enquiry_list, name='enquiry_list'),
     path('enquiry/<int:pk>/', enquiry_detail, name='enquiry_detail'),
-
-
 
 ]
