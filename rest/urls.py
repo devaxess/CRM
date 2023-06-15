@@ -33,7 +33,8 @@ from restapp.views import (
     delete_profile, comment_list, tasks_by_status, Commentuser_list, commentuser_add,
     commentuser_update, user_list, user_register, update_user, commentuser_delete,
     forget_password_view, reset_password_view, admin_register, admin_list, delete_admin, update_admin, LoginView,
-    LogoutView, myprofile_view, qa_list, qa_detail, comment_detail, CommentCreateView, enquiry_list, enquiry_detail
+    LogoutView, myprofile_view, qa_list, qa_detail, comment_detail, CommentCreateView, enquiry_list, enquiry_detail,
+    create_todo, user_task, list_alltask
 
 )
 
@@ -55,6 +56,10 @@ urlpatterns = [
 
     path('todos/', todo_list, name='todo_list'),
     path('todos/<int:pk>/', todo_detail, name='todo_detail'),
+
+    path('admintodo/list/', list_alltask, name='list_alltask'),
+    path('admintodo/list/<int:pk>/',user_task ,name = 'user_task'),
+    path('admintodo/insert/',create_todo, name='create_todo' ),
 
     path('project/list/', my_view, name='my_view'),
     path('project/insert/', view_post, name='view_post'),
@@ -99,5 +104,7 @@ urlpatterns = [
 
     path('enquiry/', enquiry_list, name='enquiry_list'),
     path('enquiry/<int:pk>/', enquiry_detail, name='enquiry_detail'),
+
+
 
 ]
