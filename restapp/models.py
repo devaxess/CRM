@@ -8,6 +8,7 @@ from django.utils import timezone
 
 # user register
 class Users(models.Model):
+    name =  models.CharField(max_length=20 , null=True)
     email         = models.EmailField(unique=True)
     mobile_number = models.CharField(max_length=20)
     password      = models.CharField(max_length=255)
@@ -51,13 +52,30 @@ class empdomain(models.Model):
 
 # TODO
 class Todo(models.Model):
-    admin       = models.ForeignKey(User, on_delete=models.CASCADE)
-    user        = models.ForeignKey(User, related_name='assigned_tasks', on_delete=models.CASCADE)
-    title       = models.CharField(max_length=200)
+    STATUS_CHOICES = (
+        ('completed', 'Completed'),
+        ('review', 'Review'),
+        ('inprogress', 'In Progress'),
+    )
+
+    PRIORITY_CHOICES = (
+        ('high', 'High'),
+        ('medium', 'Medium'),
+        ('low', 'Low'),
+    )
+
+    create_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    assign_user = models.ForeignKey(Users, related_name='assigned_tasks', on_delete=models.CASCADE, null=True)
+    team = models.CharField(max_length=200, null=True)
+    title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    completed   = models.BooleanField(default=False)
-    created_at  = models.DateTimeField(auto_now_add=True)
-    last_insert = models.DateTimeField(default=timezone.now)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='inprogress')
+    priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='medium')
+    attachments = models.FileField(upload_to='attachments/', blank=True, null=True)
+    start_date = models.DateField(null=True)
+    end_date = models.DateField(null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_updated = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.title

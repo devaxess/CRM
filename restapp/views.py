@@ -7,10 +7,9 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework import generics, status
 from .serializers import EmployeeSerializer, SkillListSerializer, DomainSerializer, TodoSerializer, ProjectSerializer, \
     TaskSerializer, MyProfileSerializer, CommentSerializer,EnquirySerializer, CommentuserSerializer, UserRegistrationSerializer,\
-     QaSerializer , SuperuserSerializer,LoginSerializer
+     QaSerializer , SuperuserSerializer,LoginSerializer,TodoAdminSerializer
 from .models import Employee, empskill, empdomain, Todo, Project, Task, MyProfile, Comment, Comment_user,Users,Qa,Enquiry
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
+
 
 
 
@@ -696,3 +695,85 @@ def enquiry_detail(request, pk):
     elif request.method == 'DELETE':
         registration.delete()
         return JsonResponse(status=status.HTTP_204_NO_CONTENT)
+
+
+
+
+@api_view(['GET'])
+def list_alltask(request):
+    registrations = Todo.objects.all()
+    serializer = TodoAdminSerializer(registrations, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
+@api_view(['GET'])
+def users_task(request, pk):
+    todos = Todo.objects.filter(assign_user=pk)
+    todo_list = []
+    for todo in todos:
+        create_user_name = todo.create_user.username if todo.create_user else None
+        assign_user_name = todo.assign_user.name if todo.assign_user else None
+        todo_data = {
+            'id': todo.id,
+            'create_user': todo.create_user_id,
+            'create_user_name': create_user_name,
+            'assign_user': todo.assign_user_id,
+            'assign_user_name': assign_user_name,
+            'team': todo.team,
+            'title': todo.title,
+            'description': todo.description,
+            'status': todo.status,
+            'priority': todo.priority,
+            'start_date': todo.start_date,
+            'end_date': todo.end_date,
+            'created_at': todo.created_at,
+            'last_updated': todo.last_updated,}
+        todo_list.append(todo_data)
+    return JsonResponse(todo_list, safe=False)
+
+
+@api_view([ 'POST'])
+def create_todo(request):
+    serializer = TodoAdminSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return JsonResponse(serializer.data, status=201)
+    return JsonResponse(serializer.errors, status=400)
+
+
+@api_view(['GET'])
+def user_task(request, pk):
+    todos = Todo.objects.filter(assign_user=pk)
+    user_tasks = []
+
+    for todo in todos:
+        create_user_name = todo.create_user.username if todo.create_user else None
+        assign_user_name = todo.assign_user.name if todo.assign_user else None
+
+        task_data = {
+            'task_id': todo.id,
+            'team': todo.team,
+            'title': todo.title,
+            'description': todo.description,
+            'status': todo.status,
+            'priority': todo.priority,
+            'startdate': todo.start_date,
+            'enddate': todo.end_date,
+            'created_at': todo.created_at,
+            'last_updated': todo.last_updated
+        }
+
+        user_data = {
+            'create_user_name': create_user_name,
+            'create_user': todo.create_user_id,
+            'assign_id': todo.assign_user_id,
+            'tasks_details': [task_data]
+        }
+
+        # Check if the user already exists in the user_tasks list
+        existing_user = next((user for user in user_tasks if user['create_user'] == todo.create_user_id), None)
+        if existing_user:
+            existing_user['tasks_details'].append(task_data)
+        else:
+            user_tasks.append(user_data)
+
+    return JsonResponse(user_tasks, safe=False)

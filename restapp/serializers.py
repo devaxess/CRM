@@ -28,6 +28,13 @@ class TodoSerializer(serializers.ModelSerializer):
         fields = ['id', 'admin', 'user', 'title', 'description', 'completed', 'created_at', 'last_insert']
 
 
+class TodoAdminSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Todo
+        fields = ['id', 'create_user', 'assign_user', 'team', 'title', 'description', 'status', 'priority', 'attachments', 'start_date', 'end_date', 'created_at', 'last_updated']
+
+
+
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
@@ -66,7 +73,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Users
-        fields = ['id',  'email', 'mobile_number',
+        fields = ['id', 'name', 'email', 'mobile_number',
                   'password', ]
 
 class SuperuserSerializer(serializers.ModelSerializer):
