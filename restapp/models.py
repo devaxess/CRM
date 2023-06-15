@@ -50,6 +50,18 @@ class empdomain(models.Model):
     last_insert = models.DateTimeField(default=timezone.now)
 
 
+class Comment(models.Model):
+    sender_id    = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='sent_comments', null=True)
+    receiver_id  = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='received_comments', null=True)
+    content      = models.TextField()
+    created_at   = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"Comment by {self.sender_id.username} at {self.created_at}"
+
+    def __str__(self):
+        return f"Comment received by {self.receiver_id.username} at {self.created_at}"
+
 # TODO
 class Todo(models.Model):
     STATUS_CHOICES = (
@@ -74,6 +86,7 @@ class Todo(models.Model):
     attachments = models.FileField(upload_to='attachments/', blank=True, null=True)
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
+    comments    = models.ManyToManyField('Comment', related_name='tasks')
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(default=timezone.now)
 
@@ -113,30 +126,6 @@ class MyProfile(models.Model):
         return self.name
 
 
-# daily_task
-class Task(models.Model):
-    title       = models.CharField(max_length=255)
-    description = models.TextField()
-    start_date  = models.DateField(null=True, default=date.today)
-    end_date    = models.DateField(null=True, default=date.today)
-    status      = models.TextField(null=True)
-    comments    = models.ManyToManyField('Comment', related_name='tasks')
-
-    def __str__(self):
-        return self.title
-
-#daily_task comment
-class Comment(models.Model):
-    sender_id    = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='sent_comments', null=True)
-    receiver_id  = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='received_comments', null=True)
-    content      = models.TextField()
-    created_at   = models.DateTimeField(default=timezone.now)
-
-    def __str__(self):
-        return f"Comment by {self.sender_id.username} at {self.created_at}"
-
-    def __str__(self):
-        return f"Comment received by {self.receiver_id.username} at {self.created_at}"
 
 
 # comment sections work_bench
