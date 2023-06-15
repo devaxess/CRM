@@ -12,10 +12,11 @@ class Users(models.Model):
     email         = models.EmailField(unique=True)
     mobile_number = models.CharField(max_length=20)
     password      = models.CharField(max_length=255)
-    # Add other fields as needed
+    verification_code = models.CharField(max_length=6, null=True)
 
     def save(self, *args, **kwargs):
         self.password = self.hash_password(self.password)
+        print(f"Storing Verification Code: {self.verification_code}")
         super(Users, self).save(*args, **kwargs)
 
     def hash_password(self, raw_password):

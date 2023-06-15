@@ -71,7 +71,7 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Users
         fields = ['id', 'name', 'email', 'mobile_number',
-                  'password', ]
+                  'password',]
 
 class SuperuserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
