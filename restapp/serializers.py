@@ -1,3 +1,6 @@
+from datetime import datetime
+
+import pytz
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Employee, empskill, empdomain, Todo, Project, MyProfile, Task, Comment, Comment_user, Users, Qa, \
@@ -61,10 +64,13 @@ class TaskSerializer(serializers.ModelSerializer):
         fields = ['id', 'title', 'description', 'start_date', 'end_date', 'status', 'comments']
 
 
+
 class CommentuserSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Comment_user
-        fields = ['id', 'task', 'time', 'last_insert']
+        fields = ['id', 'task', 'time', 'findDate', 'last_insert']
+
 
 
 # user

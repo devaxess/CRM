@@ -54,9 +54,10 @@ urlpatterns = [
     path('admins/domains/add/', emp_domains_add, name='emp_domains_add'),
     path('admins/domains/update/<int:id>/', emp_domains_update, name='emp_domains_update'),
 
+#todo
     path('todos/', todo_list, name='todo_list'),
     path('todos/<int:pk>/', todo_detail, name='todo_detail'),
-
+#admin todo
     path('admintodo/list/', list_alltask, name='list_alltask'),
     path('admintodo/list/<int:pk>/',user_task ,name = 'user_task'),
     path('admintodo/insert/',create_todo, name='create_todo' ),
@@ -65,12 +66,14 @@ urlpatterns = [
     path('project/insert/', view_post, name='view_post'),
     path('project/update/<int:id>/', view_put, name='view_put'),
 
+#myprofile
     path('myprofile/', myprofile, name='myprofile'),
     path('myprofile/<int:id>/',myprofile_view,name="myprofile_view" ),
     path('myprofile/create/', create_profile, name='create_profile'),
     path('myprofile/update/<int:pk>/', update_profile, name='update_profile'),
     path('myprofile/delete/<int:pk>/', delete_profile, name='delete_profile'),
 
+#daily task
     path('daily_task/list/', task_list, name='task_list'),
     path('daily_task/insert/', add_task, name='add_task'),
     path('daily_task/update/<int:task_id>/', update_task, name='update_task'),
@@ -79,11 +82,13 @@ urlpatterns = [
     path('task/comments/insert/<int:task_id>/', CommentCreateView.as_view(), name='comment-create'),
     path('task/comments/<int:id>/', comment_detail, name=' comment_detail'),
 
+#workbanch comment
     path('comment/list/', Commentuser_list, name='Commentuser_list'),
     path('comment/insert/', commentuser_add, name='commentuser_add'),
     path('comment/update/<int:id>/', commentuser_update, name='commentuser_update'),
     path('comment/delete/<int:id>/', commentuser_delete, name='commentuser_delete'),
 
+#user
     path('user/list/', user_list, name='user_list'),
     path('user/add/', user_register, name='user_register'),
     path('user/update/<int:task_id>/', update_user, name='update_user'),
@@ -91,17 +96,21 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
 
+#super users
     path('superuser/', admin_list, name='admin_list'),
     path('superuser/add/', admin_register, name='admin_register'),
     path('superuser/update/<int:pk>/', update_admin, name='update_admin'),
     path('superuser/delete/<int:pk>/', delete_admin, name='delete_admin'),
 
+#user forgot and reset
     path('forgot/password/', forget_password_view, name='forget_password_reset'),
     path('forgot/password/reset/', reset_password_view, name='reset_password_view'),
 
+#QA info
     path('qa/', qa_list, name='qa-list'),
     path('qa/<int:pk>/', qa_detail, name='qa-detail'),
 
+#candidate info
     path('enquiry/', enquiry_list, name='enquiry_list'),
     path('enquiry/<int:pk>/', enquiry_detail, name='enquiry_detail'),
 

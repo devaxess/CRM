@@ -143,6 +143,7 @@ class Comment(models.Model):
 class Comment_user(models.Model):
     task        = models.TextField()
     time        = models.CharField(max_length=10, null=True)
+    findDate    = models.TextField()
     last_insert = models.DateTimeField(default=timezone.now)
 
 #QA
