@@ -4,7 +4,7 @@ import pytz
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Employee, empskill, empdomain, Todo, Project, MyProfile, Comment, Comment_user, Users, Qa, \
-    Enquiry
+    Enquiry,Task
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
@@ -54,6 +54,14 @@ class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ['id', 'sender_id','receiver_id', 'content', 'created_at']
+
+#daily_task
+class TaskSerializer(serializers.ModelSerializer):
+    comments = CommentSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Task
+        fields = ['id', 'title', 'description', 'start_date', 'end_date', 'status', 'comments']
 
 
 class CommentuserSerializer(serializers.ModelSerializer):

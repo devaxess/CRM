@@ -9,8 +9,8 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework import generics, status
 from .serializers import EmployeeSerializer, SkillListSerializer, DomainSerializer,  ProjectSerializer, \
      MyProfileSerializer, CommentSerializer,EnquirySerializer, CommentuserSerializer, UserRegistrationSerializer,\
-     QaSerializer , SuperuserSerializer,LoginSerializer,TodoAdminSerializer
-from .models import Employee, empskill, empdomain, Todo, Project,  MyProfile, Comment, Comment_user,Users,Qa,Enquiry
+     QaSerializer , SuperuserSerializer,LoginSerializer,TodoAdminSerializer, TaskSerializer
+from .models import Employee, empskill, empdomain, Todo, Project,  MyProfile, Comment, Comment_user,Users,Qa,Enquiry,Task
 
 
 
@@ -263,6 +263,147 @@ def delete_profile(request, pk):
         return JsonResponse({'error': 'Profile not found'}, status=404)
     profile.delete()
     return JsonResponse(status=204)
+
+
+
+#daily_task   and  Comment
+
+
+@api_view(['GET'])
+def task_list(request):
+    if request.method == 'GET':
+        tasks = Task.objects.all()
+        serializer = TaskSerializer(tasks, many=True)
+
+        for task_data in serializer.data:
+            task_id = task_data['id']
+            comments = Comment.objects.filter(tasks=task_id)
+            comment_serializer = CommentSerializer(comments, many=True)
+            task_data['comments'] = comment_serializer.data
+
+        return JsonResponse(serializer.data, safe=False)
+
+
+@api_view(['POST'])
+def add_task(request):
+    serializer = TaskSerializer(data=request.data)
+    if serializer.is_valid():
+        task = serializer.save()
+
+        comments_data = request.data.get('comments', [])
+        for comment_data in comments_data:
+            comment_data['task'] = task.id
+            comment_serializer = CommentSerializer(data=comment_data)
+            if comment_serializer.is_valid():
+                comment_serializer.save()
+            else:
+                task.delete()
+                return JsonResponse(comment_serializer.errors, status=400)
+
+        return JsonResponse(serializer.data, status=201)
+    return JsonResponse(serializer.errors, status=400)
+
+
+
+@api_view(['PUT'])
+def update_task(request, task_id):
+    try:
+        task = Task.objects.get(id=task_id)
+    except Task.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Task not found'}, status=404)
+
+    serializer = TaskSerializer(task, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return JsonResponse({'status': 'success', 'message': 'Task updated successfully'})
+    else:
+        return JsonResponse({'status': 'error', 'message': serializer.errors}, status=400)
+
+
+@api_view(['GET'])
+def tasks_by_status(request):
+    status = request.GET.get('status')
+    start_date = request.GET.get('start_date')
+    end_date = request.GET.get('end_date')
+
+    if not status:
+        return JsonResponse({'error': 'Status is missing'}, status=400)
+
+    valid_statuses = ["in progress", "completed", "review"]
+    if status not in valid_statuses:
+        return JsonResponse({'error': 'Invalid status'}, status=400)
+
+    tasks = Task.objects.filter(status=status)
+
+    if start_date and end_date:
+        try:
+            start_date = datetime.strptime(start_date, '%Y-%m-%d').date()
+            end_date = datetime.strptime(end_date, '%Y-%m-%d').date()
+            tasks = tasks.filter(start_date__lte=end_date, end_date__gte=start_date)
+        except ValueError:
+            return JsonResponse({'error': 'Invalid date format'}, status=400)
+
+    serializer = TaskSerializer(tasks, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
+
+
+@api_view(['GET'])
+def comment_list(request):
+    if request.method == 'GET':
+        comments = Comment.objects.all()
+        serializer = CommentSerializer(comments, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+class CommentCreateView(APIView):
+    def post(self, request, task_id):
+        # Retrieve the Task instance
+        try:
+            task = Task.objects.get(id=task_id)
+        except Task.DoesNotExist:
+            return Response({'error': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        sender_id = request.user.id
+        sender_id = Users.objects.get(id=sender_id)
+
+        receiver_id = request.data.get('receiver_id')
+        content = request.data.get('content')
+
+        comment = Comment(
+            sender_id=sender_id,
+            receiver_id=receiver_id,
+            content=content,
+            created_at=timezone.now()
+        )
+
+        comment.save()
+        task.comments.add(comment)
+
+        return Response({'message': 'Comment added successfully'}, status=status.HTTP_201_CREATED)
+
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def comment_detail(request, id):
+    try:
+        comment = Comment.objects.get(pk=id)
+    except Comment.DoesNotExist:
+        return JsonResponse({'error': 'Comment not found'}, status=404)
+
+    if request.method == 'GET':
+        serializer = CommentSerializer(comment)
+        return JsonResponse(serializer.data)
+    elif request.method == 'PUT':
+        serializer = CommentSerializer(comment, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
+    elif request.method == 'DELETE':
+        comment.delete()
+        return JsonResponse({}, status=204)
+
+
 
 #comment workbench
 @api_view(['GET'])
@@ -642,7 +783,7 @@ def user_task(request, pk):
     return JsonResponse(user_tasks, safe=False)
 
 @api_view(['PUT'])
-def update_task(request, task_id):
+def update_todo(request, task_id):
     try:
         task = Todo.objects.get(id=task_id)
     except Todo.DoesNotExist:
@@ -692,55 +833,5 @@ def status_list(request):
 
     serializer = TodoAdminSerializer(tasks, many=True)
     return JsonResponse(serializer.data, safe=False)
-
-
-#todo comments
-class CommentCreateView(APIView):
-    def post(self, request, task_id):
-        # Retrieve the Task instance
-        try:
-            task = Todo.objects.get(id=task_id)
-        except Task.DoesNotExist:
-            return Response({'error': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
-
-        sender_id = request.user.id
-        sender_id = Users.objects.get(id=sender_id)
-
-        receiver_id = request.data.get('receiver_id')
-        content = request.data.get('content')
-
-        comment = Comment(
-            sender_id=sender_id,
-            receiver_id=receiver_id,
-            content=content,
-            created_at=timezone.now()
-        )
-
-        comment.save()
-        task.comments.add(comment)
-
-        return Response({'message': 'Comment added successfully'}, status=status.HTTP_201_CREATED)
-
-
-
-@api_view(['GET', 'PUT', 'DELETE'])
-def comment_detail(request, id):
-    try:
-        comment = Comment.objects.get(pk=id)
-    except Comment.DoesNotExist:
-        return JsonResponse({'error': 'Comment not found'}, status=404)
-
-    if request.method == 'GET':
-        serializer = CommentSerializer(comment)
-        return JsonResponse(serializer.data)
-    elif request.method == 'PUT':
-        serializer = CommentSerializer(comment, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(serializer.data)
-        return JsonResponse(serializer.errors, status=400)
-    elif request.method == 'DELETE':
-        comment.delete()
-        return JsonResponse({}, status=204)
 
 

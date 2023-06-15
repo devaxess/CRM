@@ -63,6 +63,19 @@ class Comment(models.Model):
     def __str__(self):
         return f"Comment received by {self.receiver_id.username} at {self.created_at}"
 
+#daily_task
+class Task(models.Model):
+    title       = models.CharField(max_length=255)
+    description = models.TextField()
+    start_date  = models.DateField(null=True, default=date.today)
+    end_date    = models.DateField(null=True, default=date.today)
+    status      = models.TextField(null=True)
+    comments    = models.ManyToManyField('Comment', related_name='tasks')
+
+    def __str__(self):
+        return self.title
+
+
 # TODO
 class Todo(models.Model):
     STATUS_CHOICES = (
@@ -87,7 +100,6 @@ class Todo(models.Model):
     attachments = models.FileField(upload_to='attachments/', blank=True, null=True)
     start_date = models.DateField(null=True)
     end_date = models.DateField(null=True)
-    comments    = models.ManyToManyField('Comment', related_name='tasks')
     created_at = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(default=timezone.now)
 
@@ -169,3 +181,9 @@ class Enquiry(models.Model):
 
     def __str__(self):
         return self.name
+
+
+
+class Mu(models.Model):
+    Name              = models.CharField(max_length=255)
+    Location          = models.CharField(max_length=255)
