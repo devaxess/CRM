@@ -28,6 +28,8 @@ class Users(models.Model):
         hashed_password = self.hash_password(raw_password)
         return self.password == hashed_password
 
+
+
 # Employee
 class Employee(models.Model):
     name        = models.CharField(max_length=100)
@@ -39,16 +41,19 @@ class Employee(models.Model):
     last_insert = models.DateTimeField(default=timezone.now)
 
 
+
 # empskill
 class empskill(models.Model):
     skills      = models.JSONField(null=True)
     last_insert = models.DateTimeField(default=timezone.now)
 
 
+
 # empdomain
 class empdomain(models.Model):
     domains     = models.JSONField(null=True)
     last_insert = models.DateTimeField(default=timezone.now)
+
 
 
 class Comment(models.Model):
@@ -63,6 +68,8 @@ class Comment(models.Model):
     def __str__(self):
         return f"Comment received by {self.receiver_id.username} at {self.created_at}"
 
+
+
 #daily_task
 class Task(models.Model):
     title       = models.CharField(max_length=255)
@@ -74,6 +81,7 @@ class Task(models.Model):
 
     def __str__(self):
         return self.title
+
 
 
 # TODO
@@ -107,6 +115,7 @@ class Todo(models.Model):
         return self.title
 
 
+
 # Project
 class Project(models.Model):
     title       = models.CharField(max_length=100)
@@ -116,6 +125,7 @@ class Project(models.Model):
 
     def __str__(self):
         return self.title
+
 
 
 # Myprofile
@@ -140,13 +150,13 @@ class MyProfile(models.Model):
 
 
 
-
 # comment sections work_bench
 class Comment_user(models.Model):
-    task        = models.TextField()
     time        = models.CharField(max_length=10, null=True)
     findDate    = models.TextField()
     last_insert = models.DateTimeField(default=timezone.now)
+
+
 
 #QA
 class Qa(models.Model):
@@ -164,7 +174,8 @@ class Qa(models.Model):
     Feedback       = models.TextField()
 
 
-#enquiry
+
+#Enquiry
 class Enquiry(models.Model):
     Name              = models.CharField(max_length=255)
     Location          = models.CharField(max_length=255)
@@ -183,7 +194,3 @@ class Enquiry(models.Model):
         return self.name
 
 
-
-class Mu(models.Model):
-    Name              = models.CharField(max_length=255)
-    Location          = models.CharField(max_length=255)

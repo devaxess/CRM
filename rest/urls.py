@@ -56,6 +56,7 @@ urlpatterns = [
     path('project/insert/', view_post, name='view_post'),
     path('project/update/<int:id>/', view_put, name='view_put'),
 
+
 #myprofile
     path('myprofile/', myprofile, name='myprofile'),
     path('myprofile/<int:id>/',myprofile_view,name="myprofile_view" ),
@@ -69,9 +70,7 @@ urlpatterns = [
     path('daily_task/insert/', add_task, name='add_task'),
     path('daily_task/update/<int:task_id>/', update_task, name='update_task'),
     path('daily_task/status/', tasks_by_status, name='tasks_by_status'),
-    path('task/comments/', comment_list, name='comment_list'),
-    path('task/comments/insert/<int:task_id>/', CommentCreateView.as_view(), name='comment-create'),
-    path('task/comments/<int:id>/', comment_detail, name=' comment_detail'),
+
 
 
 #todo
@@ -80,8 +79,11 @@ urlpatterns = [
     path('todo/insert/', create_todo, name='create_todo'),
     path('todo/update/<int:task_id>/', update_todo, name='update_task'),
     path('todo/delete/<int:id>/', delete_todo, name='delete_todo'),
-    path('todo/status/', status_list, name='status_list'),
+    path('todo/status/<int:pk>/', status_list, name='status_list'),
 
+    path('todo/comments/', comment_list, name='comment_list'),
+    path('todo/comments/insert/<int:task_id>/', CommentCreateView.as_view(), name='comment-create'),
+    path('todo/comments/<int:id>/', comment_detail, name=' comment_detail'),
 
 
 #workbanch_comment
@@ -89,6 +91,7 @@ urlpatterns = [
     path('comment/insert/', commentuser_add, name='commentuser_add'),
     path('comment/update/<int:id>/', commentuser_update, name='commentuser_update'),
     path('comment/delete/<int:id>/', commentuser_delete, name='commentuser_delete'),
+
 
 #user
     path('user/list/', user_list, name='user_list'),
@@ -98,20 +101,24 @@ urlpatterns = [
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
 
+
 #super_users
     path('superuser/', admin_list, name='admin_list'),
     path('superuser/add/', admin_register, name='admin_register'),
     path('superuser/update/<int:pk>/', update_admin, name='update_admin'),
     path('superuser/delete/<int:pk>/', delete_admin, name='delete_admin'),
 
+
 #user forgot , verification and reset
     path('forgot/password/', forget_password_view, name='forget_password_reset'),
     path('verify_verification_code/', verify_verification_code, name='verify_verification_code'),
     path('forgot/password/reset/', reset_password_view, name='reset_password_view'),
 
+
 #QA info
     path('qa/', qa_list, name='qa-list'),
     path('qa/<int:pk>/', qa_detail, name='qa-detail'),
+
 
 #candidate info
     path('enquiry/', enquiry_list, name='enquiry_list'),

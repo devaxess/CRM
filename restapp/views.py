@@ -2,6 +2,8 @@ import json
 from datetime import datetime
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
+from datetime import date, timedelta
+from django.utils import timezone
 from django.http import JsonResponse
 from django.utils.crypto import get_random_string
 from django.views.decorators.http import require_GET
@@ -267,8 +269,6 @@ def delete_profile(request, pk):
 
 
 #daily_task   and  Comment
-
-
 @api_view(['GET'])
 def task_list(request):
     if request.method == 'GET':
@@ -382,7 +382,6 @@ class CommentCreateView(APIView):
         return Response({'message': 'Comment added successfully'}, status=status.HTTP_201_CREATED)
 
 
-
 @api_view(['GET', 'PUT', 'DELETE'])
 def comment_detail(request, id):
     try:
@@ -409,7 +408,10 @@ def comment_detail(request, id):
 @api_view(['GET'])
 def Commentuser_list(request):
     if request.method == 'GET':
-        user_list = Comment_user.objects.all()
+        today = date.today()
+        yesterday = today - timedelta(days=1)
+
+        user_list = Comment_user.objects.filter(findDate__contains=[str(today), str(yesterday)])
         serializer = CommentuserSerializer(user_list, many=True)
         return JsonResponse(serializer.data, safe=False)
 
@@ -441,7 +443,6 @@ def commentuser_update(request, id):
     return JsonResponse(serializer.errors, status=400)
 
 
-
 @api_view(['DELETE'])
 def commentuser_delete(request, id):
     try:
@@ -451,6 +452,7 @@ def commentuser_delete(request, id):
 
     user_delete.delete()
     return JsonResponse({}, status=204)
+
 
 
 #User_auth
@@ -500,6 +502,7 @@ def update_user(request, task_id):
         serializer.save()
         return JsonResponse(serializer.data)
     return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 #Super or admin  User section
@@ -560,6 +563,7 @@ def update_admin(request, pk):
     return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+
 #user login and logout
 class LoginView(APIView):
     def post(self, request):
@@ -583,6 +587,7 @@ class LoginView(APIView):
 class LogoutView(APIView):
     def post(self, request):
         return JsonResponse({'message': 'Logout successful'}, status=status.HTTP_200_OK)
+
 
 
 #forgot and reset password
@@ -655,6 +660,7 @@ def reset_password_view(request):
     return JsonResponse({'message': 'Password reset successful'}, status=200)
 
 
+
 #QA list
 @api_view(['GET', 'POST'])
 def qa_list(request):
@@ -690,8 +696,9 @@ def qa_detail(request, pk):
         registration.delete()
         return JsonResponse(status=status.HTTP_204_NO_CONTENT)
 
-# Enquiry list
 
+
+# Enquiry list
 @api_view(['GET', 'POST'])
 def enquiry_list(request):
     if request.method == 'GET':
@@ -727,8 +734,8 @@ def enquiry_detail(request, pk):
         return JsonResponse(status=status.HTTP_204_NO_CONTENT)
 
 
-#TODO task new
 
+#TODO task new
 @api_view(['GET'])
 def todo_list(request):
     registrations = Todo.objects.all()
@@ -808,8 +815,9 @@ def delete_todo(request, id):
     return JsonResponse({}, status=204)
 
 
+
 @api_view(['GET'])
-def status_list(request):
+def status_list(request, pk):
     status = request.GET.get('status')
     start_date = request.GET.get('start_date')
     end_date = request.GET.get('end_date')
@@ -821,7 +829,7 @@ def status_list(request):
     if status not in valid_statuses:
         return JsonResponse({'error': 'Invalid status'}, status=400)
 
-    tasks = Todo.objects.filter(status=status)
+    tasks = Todo.objects.filter(assign_user=pk, status=status)
 
     if start_date and end_date:
         try:
