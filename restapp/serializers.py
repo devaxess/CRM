@@ -3,14 +3,16 @@ from datetime import datetime
 import pytz
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from .models import Employee, empskill, empdomain, Todo, Project, MyProfile, Task, Comment, Comment_user, Users, Qa, \
-    Enquiry
+from .models import Employee, empskill, empdomain, Todo, Project, MyProfile, Comment, Comment_user, Users, Qa, \
+    Enquiry,Task
+
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
         fields = ['id', 'name', 'skills', 'primary_skill', 'experience', 'domains', 'rating', 'last_insert']
+
 
 
 class SkillListSerializer(serializers.ModelSerializer):
@@ -25,10 +27,11 @@ class DomainSerializer(serializers.ModelSerializer):
         fields = ['id', 'domains', 'last_insert']
 
 
-class TodoSerializer(serializers.ModelSerializer):
+class CommentSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Todo
-        fields = ['id', 'admin', 'user', 'title', 'description', 'completed', 'created_at', 'last_insert']
+        model = Comment
+        fields = ['id', 'sender_id','receiver_id', 'content', 'created_at']
+
 
 
 class TodoAdminSerializer(serializers.ModelSerializer):
@@ -56,13 +59,15 @@ class CommentSerializer(serializers.ModelSerializer):
         model = Comment
         fields = ['id', 'sender_id','receiver_id', 'content', 'created_at']
 
+
+
+#daily_task
 class TaskSerializer(serializers.ModelSerializer):
     comments = CommentSerializer(many=True, read_only=True)
 
     class Meta:
         model = Task
         fields = ['id', 'title', 'description', 'start_date', 'end_date', 'status', 'comments']
-
 
 
 class CommentuserSerializer(serializers.ModelSerializer):
@@ -82,6 +87,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         fields = ['id', 'name', 'email', 'mobile_number',
                   'password',]
 
+
+
 class SuperuserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
@@ -94,9 +101,11 @@ class SuperuserSerializer(serializers.ModelSerializer):
         return user
 
 
+
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField()
+
 
 
 class QaSerializer(serializers.ModelSerializer):
@@ -117,6 +126,8 @@ class QaSerializer(serializers.ModelSerializer):
             'Period',
             'Feedback',
         ]
+
+
 
 class EnquirySerializer(serializers.ModelSerializer):
     class Meta:

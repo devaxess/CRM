@@ -27,6 +27,8 @@ class Users(models.Model):
         hashed_password = self.hash_password(raw_password)
         return self.password == hashed_password
 
+
+
 # Employee
 class Employee(models.Model):
     name        = models.CharField(max_length=100)
@@ -38,16 +40,47 @@ class Employee(models.Model):
     last_insert = models.DateTimeField(default=timezone.now)
 
 
+
 # empskill
 class empskill(models.Model):
     skills      = models.JSONField(null=True)
     last_insert = models.DateTimeField(default=timezone.now)
 
 
+
 # empdomain
 class empdomain(models.Model):
     domains     = models.JSONField(null=True)
     last_insert = models.DateTimeField(default=timezone.now)
+
+
+
+class Comment(models.Model):
+    sender_id    = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='sent_comments', null=True)
+    receiver_id  = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='received_comments', null=True)
+    content      = models.TextField()
+    created_at   = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"Comment by {self.sender_id.username} at {self.created_at}"
+
+    def __str__(self):
+        return f"Comment received by {self.receiver_id.username} at {self.created_at}"
+
+
+
+#daily_task
+class Task(models.Model):
+    title       = models.CharField(max_length=255)
+    description = models.TextField()
+    start_date  = models.DateField(null=True, default=date.today)
+    end_date    = models.DateField(null=True, default=date.today)
+    status      = models.TextField(null=True)
+    comments    = models.ManyToManyField('Comment', related_name='tasks')
+
+    def __str__(self):
+        return self.title
+
 
 
 # TODO
@@ -81,6 +114,7 @@ class Todo(models.Model):
         return self.title
 
 
+
 # Project
 class Project(models.Model):
     title       = models.CharField(max_length=100)
@@ -90,6 +124,7 @@ class Project(models.Model):
 
     def __str__(self):
         return self.title
+
 
 
 # Myprofile
@@ -113,38 +148,14 @@ class MyProfile(models.Model):
         return self.name
 
 
-# daily_task
-class Task(models.Model):
-    title       = models.CharField(max_length=255)
-    description = models.TextField()
-    start_date  = models.DateField(null=True, default=date.today)
-    end_date    = models.DateField(null=True, default=date.today)
-    status      = models.TextField(null=True)
-    comments    = models.ManyToManyField('Comment', related_name='tasks')
-
-    def __str__(self):
-        return self.title
-
-#daily_task comment
-class Comment(models.Model):
-    sender_id    = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='sent_comments', null=True)
-    receiver_id  = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='received_comments', null=True)
-    content      = models.TextField()
-    created_at   = models.DateTimeField(default=timezone.now)
-
-    def __str__(self):
-        return f"Comment by {self.sender_id.username} at {self.created_at}"
-
-    def __str__(self):
-        return f"Comment received by {self.receiver_id.username} at {self.created_at}"
-
 
 # comment sections work_bench
 class Comment_user(models.Model):
-    task        = models.TextField()
     time        = models.CharField(max_length=10, null=True)
     findDate    = models.TextField()
     last_insert = models.DateTimeField(default=timezone.now)
+
+
 
 #QA
 class Qa(models.Model):
@@ -162,7 +173,8 @@ class Qa(models.Model):
     Feedback       = models.TextField()
 
 
-#enquiry
+
+#Enquiry
 class Enquiry(models.Model):
     Name              = models.CharField(max_length=255)
     Location          = models.CharField(max_length=255)
@@ -179,3 +191,5 @@ class Enquiry(models.Model):
 
     def __str__(self):
         return self.name
+
+
