@@ -8,19 +8,18 @@ from django.utils import timezone
 
 # user register
 class Users(models.Model):
-    name =  models.CharField(max_length=20 , null=True)
+    name          = models.CharField(max_length=20 , null=True)
     email         = models.EmailField(unique=True)
     mobile_number = models.CharField(max_length=20)
     password      = models.CharField(max_length=255)
     verification_code = models.CharField(max_length=6, null=True)
 
     def save(self, *args, **kwargs):
-        self.password = self.hash_password(self.password)
-        print(f"Storing Verification Code: {self.verification_code}")
-        super(Users, self).save(*args, **kwargs)
+        if not self.pk:
+            self.password = self.hash_password(self.password)
+        super().save(*args, **kwargs)
 
     def hash_password(self, raw_password):
-        # Hash the password using hashlib
         hash_object = hashlib.sha256(raw_password.encode())
         return hash_object.hexdigest()
 

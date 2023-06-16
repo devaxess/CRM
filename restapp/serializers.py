@@ -35,9 +35,13 @@ class CommentSerializer(serializers.ModelSerializer):
 
 
 class TodoAdminSerializer(serializers.ModelSerializer):
+    create_user_name = serializers.SerializerMethodField()
+    def get_create_user_name(self, obj):
+        return obj.create_user.username
+
     class Meta:
         model = Todo
-        fields = ['id', 'create_user', 'assign_user', 'team', 'title', 'description', 'status', 'priority', 'attachments', 'start_date', 'end_date', 'created_at', 'last_updated']
+        fields = ['id', 'create_user','create_user_name', 'assign_user', 'team', 'title', 'description', 'status', 'priority', 'attachments', 'start_date', 'end_date', 'created_at', 'last_updated']
 
 
 

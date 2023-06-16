@@ -114,7 +114,6 @@ urlpatterns = [
     path('verify_verification_code/', verify_verification_code, name='verify_verification_code'),
     path('forgot/password/reset/', reset_password_view, name='reset_password_view'),
 
-
 #QA info
     path('qa/', qa_list, name='qa-list'),
     path('qa/<int:pk>/', qa_detail, name='qa-detail'),
