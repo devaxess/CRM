@@ -646,7 +646,7 @@ def reset_password_view(request):
     if user.verification_code != verification_code:
         return JsonResponse({'error': 'Invalid verification code'}, status=400)
 
-    user.set_password(new_password)
+    user.password = user.hash_password(new_password)
     user.save()
 
     return JsonResponse({'message': 'Password reset successful'}, status=200)
