@@ -79,7 +79,7 @@ urlpatterns = [
     path('todo/insert/', create_todo, name='create_todo'),
     path('todo/update/<int:task_id>/', update_todo, name='update_task'),
     path('todo/delete/<int:id>/', delete_todo, name='delete_todo'),
-    path('todo/status/<int:pk>/', status_list, name='status_list'),
+    path('todo/filterlist/<int:pk>/', status_list, name='status_list'),
 
     path('todo/comments/', comment_list, name='comment_list'),
     path('todo/comments/insert/<int:task_id>/', CommentCreateView.as_view(), name='comment-create'),
