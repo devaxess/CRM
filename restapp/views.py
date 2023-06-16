@@ -405,15 +405,15 @@ def comment_detail(request, id):
 
 
 #comment workbench
+
+
 @api_view(['GET'])
 def Commentuser_list(request):
     if request.method == 'GET':
-        today = date.today()
-        yesterday = today - timedelta(days=1)
-
-        user_list = Comment_user.objects.filter(findDate__contains=[str(today), str(yesterday)])
+        user_list = Comment_user.objects.all()
         serializer = CommentuserSerializer(user_list, many=True)
         return JsonResponse(serializer.data, safe=False)
+
 
 @api_view(['POST'])
 def commentuser_add(request):
@@ -841,5 +841,4 @@ def status_list(request, pk):
 
     serializer = TodoAdminSerializer(tasks, many=True)
     return JsonResponse(serializer.data, safe=False)
-
 

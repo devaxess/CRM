@@ -74,7 +74,7 @@ class CommentuserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Comment_user
-        fields = ['id', 'task', 'time', 'findDate', 'last_insert']
+        fields = ['id', 'time', 'findDate', 'last_insert']
 
 
 
