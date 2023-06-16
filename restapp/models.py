@@ -151,6 +151,7 @@ class MyProfile(models.Model):
 
 # comment sections work_bench
 class Comment_user(models.Model):
+    task        = models.TextField()
     time        = models.CharField(max_length=10, null=True)
     findDate    = models.TextField()
     last_insert = models.DateTimeField(default=timezone.now)
