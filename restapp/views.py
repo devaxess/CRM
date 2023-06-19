@@ -1,9 +1,9 @@
 import json
-from datetime import datetime
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
-from datetime import datetime
+from datetime import datetime, timedelta, date
 from django.utils import timezone
+from django.db.models import Q
 from django.http import JsonResponse
 from django.utils.crypto import get_random_string
 from django.views.decorators.http import require_GET
@@ -406,12 +406,21 @@ def comment_detail(request, id):
 
 #comment workbench
 
+
 @api_view(['GET'])
 def Commentuser_list(request):
     if request.method == 'GET':
-        user_list = Comment_user.objects.all()
+        today = date.today()
+        yesterday = today - timedelta(days=1)
+
+        user_list = Comment_user.objects.filter(
+            Q(findDate__contains=today.strftime("%Y-%m-%d")) |
+            Q(findDate__contains=yesterday.strftime("%Y-%m-%d"))
+        )
         serializer = CommentuserSerializer(user_list, many=True)
         return JsonResponse(serializer.data, safe=False)
+
+
 
 @api_view(['GET'])
 def filter_commentuser(request):
