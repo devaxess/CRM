@@ -11,7 +11,7 @@ from rest_framework.decorators import api_view, authentication_classes, permissi
 from rest_framework import generics, status
 from .serializers import EmployeeSerializer, SkillListSerializer, DomainSerializer,  ProjectSerializer, \
      MyProfileSerializer, CommentSerializer,EnquirySerializer, CommentuserSerializer, UserRegistrationSerializer,\
-     QaSerializer , SuperuserSerializer,LoginSerializer,TodoAdminSerializer, TaskSerializer
+     QaSerializer , SuperuserSerializer,LoginSerializer,TodoAdminSerializer, TaskSerializer,UserProfileSerializer
 from .models import Employee, empskill, empdomain, Todo, Project,  MyProfile, Comment, Comment_user,Users,Qa,Enquiry,Task
 
 
@@ -447,7 +447,7 @@ def commentuser_add(request):
         time = f"{hours}:{minutes} {period}"
 
         find_date_str = request.data.get('findDate')
-        find_date = datetime.strptime(find_date_str, "%a %b %d %Y %H:%M:%S GMT%z ")
+        find_date = datetime.strptime(find_date_str, "%a %b %d %Y %H:%M:%S GMT%z")
 
         serializer.validated_data['time'] = time
         serializer.validated_data['findDate'] = find_date
@@ -486,7 +486,7 @@ def commentuser_delete(request, id):
 @api_view(['GET'])
 def user_list(request):
     if request.method == 'GET':
-        registrations = Users.objects.all()
+        registrations = User.objects.all()
         serializer = UserRegistrationSerializer(registrations, many=True)
         return JsonResponse(serializer.data, safe=False)
     return JsonResponse({"message": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -495,23 +495,26 @@ def user_list(request):
 @api_view(['POST'])
 def user_register(request):
     if request.method == 'POST':
-       # username = request.data.get("username")
         email = request.data.get("email")
         password = request.data.get("password")
         confirm_password = request.data.get("confirm_password")
 
         if password != confirm_password:
             return JsonResponse({"message": "Passwords do not match"}, status=status.HTTP_400_BAD_REQUEST)
-        '''
-        if User.objects.filter(username=username).exists():
-            return JsonResponse({"message": "Username already taken"}, status=status.HTTP_400_BAD_REQUEST) '''
 
         if User.objects.filter(email=email).exists():
             return JsonResponse({"message": "Email already taken"}, status=status.HTTP_400_BAD_REQUEST)
 
-        serializer = UserRegistrationSerializer(data=request.data)
+        profile_data = {
+            'mobile_number': request.data.get('mobile_number'),
+            'verification_code': request.data.get('verification_code')
+        }
+
+
+        serializer = UserProfileSerializer(data=profile_data)
         if serializer.is_valid():
-            serializer.save()
+            user = User.objects.create_user(email=email, password=password)
+            serializer.save(user=user)
             return JsonResponse({"message": "User registration successful"}, status=status.HTTP_201_CREATED)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     return JsonResponse({"message": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
