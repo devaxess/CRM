@@ -2,7 +2,7 @@ import json
 from datetime import datetime
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
-from datetime import date, timedelta
+from datetime import datetime
 from django.utils import timezone
 from django.http import JsonResponse
 from django.utils.crypto import get_random_string
@@ -406,13 +406,26 @@ def comment_detail(request, id):
 
 #comment workbench
 
-
 @api_view(['GET'])
 def Commentuser_list(request):
     if request.method == 'GET':
         user_list = Comment_user.objects.all()
         serializer = CommentuserSerializer(user_list, many=True)
         return JsonResponse(serializer.data, safe=False)
+
+@api_view(['GET'])
+def filter_commentuser(request):
+    start_date_str = request.GET.get('startDate')
+    end_date_str = request.GET.get('endDate')
+
+    start_date = datetime.strptime(start_date_str, "%d/%m/%Y").date()
+    end_date = datetime.strptime(end_date_str, "%d/%m/%Y").date()
+
+    filtered_comment_users = Comment_user.objects.filter(findDate__range=(start_date, end_date))
+
+    # Serialize the filtered comment users if needed
+    serializer = CommentuserSerializer(filtered_comment_users, many=True)
+    return JsonResponse(serializer.data,  safe=False, status=200)
 
 
 @api_view(['POST'])
@@ -424,10 +437,15 @@ def commentuser_add(request):
         period = request.data.get('period')
         time = f"{hours}:{minutes} {period}"
 
+        find_date_str = request.data.get('findDate')
+        find_date = datetime.strptime(find_date_str, "%a %b %d %Y %H:%M:%S GMT%z ")
+
         serializer.validated_data['time'] = time
+        serializer.validated_data['findDate'] = find_date
         serializer.save()
         return JsonResponse(serializer.data, status=201)
     return JsonResponse(serializer.errors, status=400)
+
 
 @api_view(['PUT'])
 def commentuser_update(request, id):

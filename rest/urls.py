@@ -32,8 +32,8 @@ from restapp.views import (
     commentuser_update, user_list, user_register, update_user, commentuser_delete,
     forget_password_view, reset_password_view, admin_register, admin_list, delete_admin, update_admin, LoginView,
     LogoutView, myprofile_view, qa_list, qa_detail, comment_detail, CommentCreateView, enquiry_list, enquiry_detail,
-    status_list, todo_list, update_task, delete_todo,create_todo, user_task, verify_verification_code, comment_list,
-    tasks_by_status, add_task, task_list,update_todo
+    status_list, todo_list, update_task, delete_todo, create_todo, user_task, verify_verification_code, comment_list,
+    tasks_by_status, add_task, task_list, update_todo, filter_commentuser
 )
 
 urlpatterns = [
@@ -88,6 +88,8 @@ urlpatterns = [
 
 #workbanch_comment
     path('comment/list/', Commentuser_list, name='Commentuser_list'),
+    path('comment/list/filter/', filter_commentuser, name='filter_commentuser'),
+
     path('comment/insert/', commentuser_add, name='commentuser_add'),
     path('comment/update/<int:id>/', commentuser_update, name='commentuser_update'),
     path('comment/delete/<int:id>/', commentuser_delete, name='commentuser_delete'),
