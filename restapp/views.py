@@ -855,7 +855,7 @@ def status_list(request, pk):
     if not status:
         return JsonResponse({'error': 'Status is missing'}, status=400)
 
-    valid_statuses = ["in progress", "completed", "review"]
+    valid_statuses = ["inprogress", "completed", "review"]
     if status not in valid_statuses:
         return JsonResponse({'error': 'Invalid status'}, status=400)
 

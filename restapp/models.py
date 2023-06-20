@@ -90,7 +90,7 @@ class Todo(models.Model):
     STATUS_CHOICES = (
         ('completed', 'Completed'),
         ('review', 'Review'),
-        ('inprogress', 'In Progress'),
+        ('inprogress', 'Inprogress'),
     )
 
     PRIORITY_CHOICES = (
