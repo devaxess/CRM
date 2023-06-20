@@ -3,18 +3,36 @@ from datetime import date
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import AbstractUser
 
-class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+from rest import settings
+
+
+class UserProfile(AbstractUser):
     mobile_number = models.CharField(max_length=15)
-    verification_code = models.CharField(max_length=6,null=True)
+    verification_code = models.CharField(max_length=6)
+    password      = models.CharField(max_length=255)
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.password = self.hash_password(self.password)
+        super().save(*args, **kwargs)
+
+    def hash_password(self, raw_password):
+        hash_object = hashlib.sha256(raw_password.encode())
+        return hash_object.hexdigest()
+
+    def check_password(self, raw_password):
+        hashed_password = self.hash_password(raw_password)
+        return self.password == hashed_password
+
 
 # user register
 class Users(models.Model):
-    name          = models.CharField(max_length=20 , null=True)
-    email         = models.EmailField(unique=True)
-    mobile_number = models.CharField(max_length=20)
-    password      = models.CharField(max_length=255)
+    name              = models.CharField(max_length=20 , null=True)
+    email             = models.EmailField(unique=True)
+    mobile_number     = models.CharField(max_length=20)
+    password          = models.CharField(max_length=255)
     verification_code = models.CharField(max_length=6, null=True)
 
     def save(self, *args, **kwargs):
@@ -100,7 +118,7 @@ class Todo(models.Model):
         ('low', 'Low'),
     )
 
-    create_user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    create_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
     assign_user = models.ForeignKey(Users, related_name='assigned_tasks', on_delete=models.CASCADE, null=True)
     team = models.CharField(max_length=200, null=True)
     title = models.CharField(max_length=200)

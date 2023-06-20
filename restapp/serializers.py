@@ -4,7 +4,7 @@ import pytz
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from .models import Employee, empskill, empdomain, Todo, Project, MyProfile, Comment, Comment_user, Users, Qa, \
-    Enquiry, Task, UserProfile
+    Enquiry, Task ,UserProfile
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
@@ -85,44 +85,26 @@ class CommentuserSerializer(serializers.ModelSerializer):
 
 
 
-
-
-
-class UserProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = UserProfile
-        fields = ['mobile_number', 'verification_code']
-
-
-
-
-
-
-
-
 # user
 class UserRegistrationSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
-
     class Meta:
-        model = User
-        fields = ['id', 'username', 'email', 'mobile_number',
-                  'password',]
+        model = UserProfile
+        fields = ['id', 'username', 'email', 'mobile_number']
 
+#admin
 
 
 class SuperuserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
     class Meta:
-        model = User
-        fields = ['id','username', 'email',  'mobile_number' , 'password', 'is_superuser']
+        model = UserProfile
+        fields = ['id', 'username', 'email', 'mobile_number', 'password', 'is_superuser']
 
     def create(self, validated_data):
-        user = User.objects.create_superuser(**validated_data)
+        password = validated_data.pop('password')
+        user = UserProfile.objects.create_superuser(password=password, **validated_data)
         return user
-
-
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()

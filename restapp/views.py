@@ -10,9 +10,9 @@ from django.views.decorators.http import require_GET
 from rest_framework.decorators import api_view, authentication_classes, permission_classes, APIView
 from rest_framework import generics, status
 from .serializers import EmployeeSerializer, SkillListSerializer, DomainSerializer,  ProjectSerializer, \
-     MyProfileSerializer, CommentSerializer,EnquirySerializer, CommentuserSerializer, UserRegistrationSerializer,\
-     QaSerializer , SuperuserSerializer,LoginSerializer,TodoAdminSerializer, TaskSerializer,UserProfileSerializer
-from .models import Employee, empskill, empdomain, Todo, Project,  MyProfile, Comment, Comment_user,Users,Qa,Enquiry,Task
+     MyProfileSerializer, CommentSerializer,EnquirySerializer, CommentuserSerializer, UserRegistrationSerializer ,\
+     QaSerializer , SuperuserSerializer,LoginSerializer,TodoAdminSerializer, TaskSerializer
+from .models import Employee, empskill, empdomain, Todo, Project,  MyProfile, Comment, Comment_user,Users,Qa,Enquiry,Task,UserProfile
 
 
 
@@ -484,12 +484,21 @@ def commentuser_delete(request, id):
 
 #User_auth
 @api_view(['GET'])
-def user_list(request):
-    if request.method == 'GET':
-        registrations = User.objects.all()
-        serializer = UserRegistrationSerializer(registrations, many=True)
-        return JsonResponse(serializer.data, safe=False)
-    return JsonResponse({"message": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+def user_list(request, id=None):
+    if id is not None:
+        try:
+            user = UserProfile.objects.get(id=id)
+        except UserProfile.DoesNotExist:
+            return JsonResponse({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = UserRegistrationSerializer(user)
+        return JsonResponse(serializer.data)
+
+    registrations = UserProfile.objects.all()
+    serializer = UserRegistrationSerializer(registrations, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
+
 
 
 @api_view(['POST'])
@@ -502,19 +511,12 @@ def user_register(request):
         if password != confirm_password:
             return JsonResponse({"message": "Passwords do not match"}, status=status.HTTP_400_BAD_REQUEST)
 
-        if User.objects.filter(email=email).exists():
+        if UserProfile.objects.filter(email=email).exists():
             return JsonResponse({"message": "Email already taken"}, status=status.HTTP_400_BAD_REQUEST)
 
-        profile_data = {
-            'mobile_number': request.data.get('mobile_number'),
-            'verification_code': request.data.get('verification_code')
-        }
-
-
-        serializer = UserProfileSerializer(data=profile_data)
+        serializer = UserRegistrationSerializer(data=request.data)
         if serializer.is_valid():
-            user = User.objects.create_user(email=email, password=password)
-            serializer.save(user=user)
+            serializer.save()
             return JsonResponse({"message": "User registration successful"}, status=status.HTTP_201_CREATED)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     return JsonResponse({"message": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
@@ -523,75 +525,66 @@ def user_register(request):
 @api_view(['PUT'])
 def update_user(request, task_id):
     try:
-        user = Users.objects.get(id=task_id)
-    except CustomUser.DoesNotExist:
+        user = UserProfile.objects.get(id=task_id)
+    except UserProfile.DoesNotExist:
         return JsonResponse({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
-    serializer = UserRegistrationSerializer(user, data=request.data)
-    if serializer.is_valid():
-        serializer.save()
-        return JsonResponse(serializer.data)
-    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    if request.method == 'PUT':
+        email = request.data.get("email")
+
+        if email != user.email and UserProfile.objects.filter(email=email).exists():
+            return JsonResponse({"message": "Email already taken"}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = UserRegistrationSerializer(user, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return JsonResponse({"message": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 
 #Super or admin  User section
+
 @api_view(['GET'])
-def admin_list(request):
-    if request.method == 'GET':
-        registrations = User.objects.all()
-        serializer = SuperuserSerializer(registrations, many=True)
-        return JsonResponse(serializer.data, safe=False)
-    return JsonResponse({"message": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+def superuser_list(request):
+    superusers = UserProfile.objects.filter(is_superuser=True)
+    serializer = SuperuserSerializer(superusers, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
 
 @api_view(['POST'])
-def admin_register(request):
-    if request.method == 'POST':
-        username = request.data.get("username")
-        email = request.data.get("email")
+def superuser_register(request):
+    username = request.data.get('username')
+    email = request.data.get('email')
+    password = request.data.get('password')
 
-        if User.objects.filter(username=username).exists():
-            return JsonResponse({"message": "Username already taken"}, status=status.HTTP_400_BAD_REQUEST)
+    if not (username and email and password):
+        return JsonResponse({'message': 'Please provide username, email, and password'}, status=status.HTTP_400_BAD_REQUEST)
 
-        if User.objects.filter(email=email).exists():
-            return JsonResponse({"message": "Email already taken"}, status=status.HTTP_400_BAD_REQUEST)
+    if UserProfile.objects.filter(username=username).exists():
+        return JsonResponse({'message': 'Username already taken'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Set is_superuser=True when creating the user
-        data = request.data.copy()
-        data["is_superuser"] = True
-
-        serializer = SuperuserSerializer(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse({"message": "Superuser registration successful"}, status=status.HTTP_201_CREATED)
-        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    return JsonResponse({"message": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
-
-@api_view(['DELETE'])
-def delete_admin(request, pk):
     try:
-        user = User.objects.get(pk=pk)
-    except User.DoesNotExist:
-        return JsonResponse({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        user = UserProfile.objects.create_superuser(username=username, email=email, password=password)
+    except Exception as e:
+        return JsonResponse({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    user.delete()
-    return JsonResponse({"message": "User deleted successfully"}, status=status.HTTP_204_NO_CONTENT)
-
+    serializer = SuperuserSerializer(user)
+    return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
 
 @api_view(['PUT'])
-def update_admin(request, pk):
+def superuser_edit(request, user_id):
     try:
-        user = User.objects.get(pk=pk)
-    except User.DoesNotExist:
-        return JsonResponse({"message": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+        user = UserProfile.objects.get(id=user_id, is_superuser=True)
+    except UserProfile.DoesNotExist:
+        return JsonResponse({'message': 'Superuser not found'}, status=status.HTTP_404_NOT_FOUND)
 
-    serializer = SuperuserSerializer(user, data=request.data)
+    serializer = SuperuserSerializer(user, data=request.data, partial=True)
     if serializer.is_valid():
         serializer.save()
-        return JsonResponse(serializer.data, status=status.HTTP_200_OK)
-
+        return JsonResponse(serializer.data)
     return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 
 #user login and logout
@@ -604,12 +597,11 @@ class LoginView(APIView):
         password = serializer.validated_data['password']
 
         try:
-            user = Users.objects.get(email=email)
-        except Users.DoesNotExist:
+            user = UserProfile.objects.get(email=email)
+        except UserProfile.DoesNotExist:
             return JsonResponse({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
         if user.check_password(password):
-            # Perform login logic here, if required
             return JsonResponse({'message': 'Login successful'}, status=status.HTTP_200_OK)
         else:
             return JsonResponse({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)

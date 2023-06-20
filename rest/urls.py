@@ -30,10 +30,11 @@ from restapp.views import (
     my_view, view_post, view_put, myprofile, create_profile, update_profile,
     delete_profile, Commentuser_list, commentuser_add,
     commentuser_update, user_list, user_register, update_user, commentuser_delete,
-    forget_password_view, reset_password_view, admin_register, admin_list, delete_admin, update_admin, LoginView,
+    forget_password_view, reset_password_view, LoginView,
     LogoutView, myprofile_view, qa_list, qa_detail, comment_detail, CommentCreateView, enquiry_list, enquiry_detail,
     status_list, todo_list, update_task, delete_todo, create_todo, user_task, verify_verification_code, comment_list,
-    tasks_by_status, add_task, task_list, update_todo, filter_commentuser
+    tasks_by_status, add_task, task_list, update_todo, filter_commentuser, superuser_register, superuser_list,
+    superuser_edit
 )
 
 urlpatterns = [
@@ -97,7 +98,8 @@ urlpatterns = [
 
 #user
     path('user/list/', user_list, name='user_list'),
-    path('user/add/', user_register, name='user_register'),
+    path('user/list/<int:id>/', user_list, name='user_list'),
+    path('user/insert/', user_register, name='user_register'),
     path('user/update/<int:task_id>/', update_user, name='update_user'),
 
     path('login/', LoginView.as_view(), name='login'),
@@ -105,10 +107,9 @@ urlpatterns = [
 
 
 #super_users
-    path('superuser/', admin_list, name='admin_list'),
-    path('superuser/add/', admin_register, name='admin_register'),
-    path('superuser/update/<int:pk>/', update_admin, name='update_admin'),
-    path('superuser/delete/<int:pk>/', delete_admin, name='delete_admin'),
+    path('superuser/', superuser_list, name='superuser_list'),
+    path('superuser/insert/', superuser_register, name='superuser_register'),
+    path('superuser/update/<int:pk>/', superuser_edit, name='superuser_edit'),
 
 
 #user forgot , verification and reset
