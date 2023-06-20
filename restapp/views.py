@@ -5,14 +5,16 @@ from datetime import datetime, timedelta, date
 from django.utils import timezone
 from django.db.models import Q
 from django.http import JsonResponse
+from django.contrib.auth import authenticate, login
+
 from django.utils.crypto import get_random_string
 from django.views.decorators.http import require_GET
-from rest_framework.decorators import api_view, authentication_classes, permission_classes, APIView
+from rest_framework.decorators import api_view, APIView
 from rest_framework import generics, status
 from .serializers import EmployeeSerializer, SkillListSerializer, DomainSerializer,  ProjectSerializer, \
      MyProfileSerializer, CommentSerializer,EnquirySerializer, CommentuserSerializer, UserRegistrationSerializer ,\
-     QaSerializer , SuperuserSerializer,LoginSerializer,TodoAdminSerializer, TaskSerializer
-from .models import Employee, empskill, empdomain, Todo, Project,  MyProfile, Comment, Comment_user,Users,Qa,Enquiry,Task,UserProfile
+     QaSerializer , SuperuserSerializer,TodoAdminSerializer, TaskSerializer, LoginSerializer
+from .models import Employee, empskill, empdomain, Todo, Project,  MyProfile, Comment, Comment_user, Qa,Enquiry,Task,UserProfile
 
 
 
@@ -364,7 +366,7 @@ class CommentCreateView(APIView):
             return Response({'error': 'Task not found'}, status=status.HTTP_404_NOT_FOUND)
 
         sender_id = request.user.id
-        sender_id = Users.objects.get(id=sender_id)
+        sender_id = UserProfile.objects.get(id=sender_id)
 
         receiver_id = request.data.get('receiver_id')
         content = request.data.get('content')
@@ -555,28 +557,29 @@ def superuser_list(request):
 
 @api_view(['POST'])
 def superuser_register(request):
-    username = request.data.get('username')
     email = request.data.get('email')
     password = request.data.get('password')
+    confirm_password = request.data.get('confirm_password')
 
-    if not (username and email and password):
-        return JsonResponse({'message': 'Please provide username, email, and password'}, status=status.HTTP_400_BAD_REQUEST)
+    if password != confirm_password:
+        return JsonResponse({"message": "Passwords do not match"}, status=status.HTTP_400_BAD_REQUEST)
 
-    if UserProfile.objects.filter(username=username).exists():
-        return JsonResponse({'message': 'Username already taken'}, status=status.HTTP_400_BAD_REQUEST)
+    if UserProfile.objects.filter(email=email).exists():
+        return JsonResponse({"message": "Email already taken"}, status=status.HTTP_400_BAD_REQUEST)
 
-    try:
-        user = UserProfile.objects.create_superuser(username=username, email=email, password=password)
-    except Exception as e:
-        return JsonResponse({'message': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+    data = request.data.copy()
+    data["is_superuser"] = True
 
-    serializer = SuperuserSerializer(user)
-    return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+    serializer = SuperuserSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+        return JsonResponse({"message": "Superuser registration successful"}, status=status.HTTP_201_CREATED)
+    return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT'])
 def superuser_edit(request, user_id):
     try:
-        user = UserProfile.objects.get(id=user_id, is_superuser=True)
+        user = UserProfile.objects.get(id=user_id)
     except UserProfile.DoesNotExist:
         return JsonResponse({'message': 'Superuser not found'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -585,6 +588,7 @@ def superuser_edit(request, user_id):
         serializer.save()
         return JsonResponse(serializer.data)
     return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 #user login and logout
@@ -606,9 +610,13 @@ class LoginView(APIView):
         else:
             return JsonResponse({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
 
+
+
 class LogoutView(APIView):
     def post(self, request):
         return JsonResponse({'message': 'Logout successful'}, status=status.HTTP_200_OK)
+
+
 
 
 
@@ -617,8 +625,8 @@ class LogoutView(APIView):
 def forget_password_view(request):
     email = request.data.get('email')
     try:
-        user = Users.objects.get(email=email)
-    except Users.DoesNotExist:
+        user = UserProfile.objects.get(email=email)
+    except UserProfile.DoesNotExist:
         return JsonResponse({'error': 'User not found'}, status=404)
 
     verification_code = get_random_string(length=6, allowed_chars='0123456789')
@@ -646,8 +654,8 @@ def verify_verification_code(request):
         return JsonResponse({'error': 'Invalid request data'}, status=400)
 
     try:
-        user = Users.objects.get(email=email)
-    except Users.DoesNotExist:
+        user = UserProfile.objects.get(email=email)
+    except UserProfile.DoesNotExist:
         return JsonResponse({'error': 'User not found'}, status=404)
 
     print(f"Stored Verification Code: {user.verification_code}")
@@ -669,8 +677,8 @@ def reset_password_view(request):
     new_password = request.data.get('new_password')
 
     try:
-        user = Users.objects.get(email=email)
-    except Users.DoesNotExist:
+        user = UserProfile.objects.get(email=email)
+    except UserProfile.DoesNotExist:
         return JsonResponse({'error': 'User not found'}, status=404)
 
     if user.verification_code != verification_code:

@@ -30,11 +30,11 @@ from restapp.views import (
     my_view, view_post, view_put, myprofile, create_profile, update_profile,
     delete_profile, Commentuser_list, commentuser_add,
     commentuser_update, user_list, user_register, update_user, commentuser_delete,
-    forget_password_view, reset_password_view, LoginView,
+    forget_password_view, reset_password_view,
     LogoutView, myprofile_view, qa_list, qa_detail, comment_detail, CommentCreateView, enquiry_list, enquiry_detail,
     status_list, todo_list, update_task, delete_todo, create_todo, user_task, verify_verification_code, comment_list,
     tasks_by_status, add_task, task_list, update_todo, filter_commentuser, superuser_register, superuser_list,
-    superuser_edit
+    superuser_edit,  LoginView
 )
 
 urlpatterns = [
@@ -102,7 +102,7 @@ urlpatterns = [
     path('user/insert/', user_register, name='user_register'),
     path('user/update/<int:task_id>/', update_user, name='update_user'),
 
-    path('login/', LoginView.as_view(), name='login'),
+    path('login/',LoginView.as_view(), name='login_view'),
     path('logout/', LogoutView.as_view(), name='logout'),
 
 

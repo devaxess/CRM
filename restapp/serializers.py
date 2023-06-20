@@ -1,9 +1,7 @@
-from datetime import datetime
 
-import pytz
-from django.contrib.auth.models import User
+
 from rest_framework import serializers
-from .models import Employee, empskill, empdomain, Todo, Project, MyProfile, Comment, Comment_user, Users, Qa, \
+from .models import Employee, empskill, empdomain, Todo, Project, MyProfile, Comment, Comment_user, Qa, \
     Enquiry, Task ,UserProfile
 
 
@@ -87,13 +85,14 @@ class CommentuserSerializer(serializers.ModelSerializer):
 
 # user
 class UserRegistrationSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
     class Meta:
         model = UserProfile
-        fields = ['id', 'username', 'email', 'mobile_number',  'is_superuser']
+        fields = ['id', 'username', 'email', 'mobile_number', 'password', 'is_superuser']
+
 
 #admin
-
-
 class SuperuserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
 
@@ -102,15 +101,12 @@ class SuperuserSerializer(serializers.ModelSerializer):
         fields = ['id', 'username', 'email', 'mobile_number', 'password', 'is_superuser']
 
     def create(self, validated_data):
-        password = validated_data.pop('password')
-        user = UserProfile.objects.create_superuser(password=password, **validated_data)
+        user = UserProfile.objects.create_superuser(**validated_data)
         return user
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
     password = serializers.CharField()
-
-
 
 class QaSerializer(serializers.ModelSerializer):
     class Meta:
