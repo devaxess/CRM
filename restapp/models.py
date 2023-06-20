@@ -77,8 +77,8 @@ class empdomain(models.Model):
 
 
 class Comment(models.Model):
-    sender_id    = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='sent_comments', null=True)
-    receiver_id  = models.ForeignKey(Users, on_delete=models.CASCADE, related_name='received_comments', null=True)
+    sender_id    = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='sent_comments', null=True)
+    receiver_id  = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='received_comments', null=True)
     content      = models.TextField()
     created_at   = models.DateTimeField(default=timezone.now)
 
@@ -118,8 +118,8 @@ class Todo(models.Model):
         ('low', 'Low'),
     )
 
-    create_user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True)
-    assign_user = models.ForeignKey(Users, related_name='assigned_tasks', on_delete=models.CASCADE, null=True)
+    create_user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True)
+    assign_user = models.ForeignKey(UserProfile, related_name='assigned_tasks', on_delete=models.CASCADE, null=True)
     team = models.CharField(max_length=200, null=True)
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
@@ -150,7 +150,7 @@ class Project(models.Model):
 
 # Myprofile
 class MyProfile(models.Model):
-    user_id       = models.ForeignKey(Users, on_delete=models.CASCADE,null=True)
+    user_id       = models.ForeignKey(UserProfile, on_delete=models.CASCADE,null=True)
     name          = models.CharField(max_length=100)
     date_of_birth = models.DateField()
     email_address = models.EmailField()
@@ -207,7 +207,7 @@ class Enquiry(models.Model):
     Comments          = models.TextField()
     Personaldetails  = models.TextField()
     Handledby        = models.CharField(max_length=255)
-    Officevisit      = models.BooleanField(default=False)
+    Officevisit      = models.BooleanField(default=False, null=True)
     Status            = models.CharField(max_length=255)
     Feedback         = models.TextField()
 

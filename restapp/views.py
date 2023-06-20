@@ -780,7 +780,7 @@ def user_task(request, pk):
 
     for todo in todos:
         create_user_name = todo.create_user.username if todo.create_user else None
-        assign_user_name = todo.assign_user.name if todo.assign_user else None
+        assign_user_name = todo.assign_user.username if todo.assign_user else None
 
         task_data = {
             'task_id': todo.id,

@@ -89,7 +89,7 @@ class CommentuserSerializer(serializers.ModelSerializer):
 class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ['id', 'username', 'email', 'mobile_number']
+        fields = ['id', 'username', 'email', 'mobile_number',  'is_superuser']
 
 #admin
 
