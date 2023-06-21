@@ -1,6 +1,5 @@
 import hashlib
 from datetime import date
-from django.contrib.auth.models import User
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import AbstractUser
@@ -57,6 +56,7 @@ class empdomain(models.Model):
 
 
 
+#Task comment
 class Comment(models.Model):
     sender_id    = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='sent_comments', null=True)
     receiver_id  = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='received_comments', null=True)
@@ -85,6 +85,19 @@ class Task(models.Model):
 
 
 
+#Todo comments
+
+class TodoComment(models.Model):
+    todo = models.ForeignKey('Todo', on_delete=models.CASCADE)
+    sender = models.ForeignKey('UserProfile', on_delete=models.CASCADE, related_name='sent_todo_comments', null=True)
+    receiver = models.ForeignKey('UserProfile', on_delete=models.CASCADE, related_name='received_todo_comments', null=True)
+    content = models.TextField()
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"Comment on Todo '{self.todo.title}' by {self.sender}"
+
+
 # TODO
 class Todo(models.Model):
     STATUS_CHOICES = (
@@ -101,15 +114,15 @@ class Todo(models.Model):
 
     create_user = models.ForeignKey(UserProfile, on_delete=models.CASCADE, null=True)
     assign_user = models.ForeignKey(UserProfile, related_name='assigned_tasks', on_delete=models.CASCADE, null=True)
-    team = models.CharField(max_length=200, null=True)
-    title = models.CharField(max_length=200)
+    team        = models.CharField(max_length=200, null=True)
+    title       = models.CharField(max_length=200)
     description = models.TextField(blank=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='inprogress')
-    priority = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='medium')
+    status      = models.CharField(max_length=20, choices=STATUS_CHOICES, default='inprogress')
+    priority    = models.CharField(max_length=20, choices=PRIORITY_CHOICES, default='medium')
     attachments = models.FileField(upload_to='attachments/', blank=True, null=True)
-    start_date = models.DateField(null=True)
-    end_date = models.DateField(null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
+    start_date  = models.DateField(null=True)
+    end_date    = models.DateField(null=True)
+    created_at  = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
@@ -155,7 +168,7 @@ class MyProfile(models.Model):
 class Comment_user(models.Model):
     task        = models.TextField(null=True)
     time        = models.CharField(max_length=10, null=True)
-    findDate    = models.TextField()
+    findDate    = models.TextField(null=True)
     last_insert = models.DateTimeField(default=timezone.now)
 
 
@@ -164,14 +177,14 @@ class Comment_user(models.Model):
 class Qa(models.Model):
     Name           = models.CharField(max_length=255)
     Number         = models.CharField(max_length=20)
-    Emailid       = models.EmailField()
+    Emailid        = models.EmailField()
     Skills         = models.CharField(max_length=255)
     Domain         = models.CharField(max_length=255)
     Experience     = models.IntegerField()
     Relevantexperience    = models.IntegerField()
     Location       = models.CharField(max_length=255)
     Currentctc     = models.DecimalField(max_digits=10, decimal_places=2)
-    Expectedctc          = models.DecimalField(max_digits=10, decimal_places=2)
+    Expectedctc    = models.DecimalField(max_digits=10, decimal_places=2)
     Period         = models.IntegerField()
     Feedback       = models.TextField()
 
@@ -179,17 +192,17 @@ class Qa(models.Model):
 
 #Enquiry
 class Enquiry(models.Model):
-    Name              = models.CharField(max_length=255)
-    Location          = models.CharField(max_length=255)
+    Name             = models.CharField(max_length=255)
+    Location         = models.CharField(max_length=255)
     Sourceofenquiry = models.CharField(max_length=255)
     Contacteddate    = models.DateField(null=True, blank=True)
     Followupdate     = models.DateField(null=True, blank=True)
     Number           = models.CharField(max_length=20)
-    Comments          = models.TextField()
+    Comments         = models.TextField()
     Personaldetails  = models.TextField()
     Handledby        = models.CharField(max_length=255)
     Officevisit      = models.BooleanField(default=False, null=True)
-    Status            = models.CharField(max_length=255)
+    Status           = models.CharField(max_length=255)
     Feedback         = models.TextField()
 
     def __str__(self):

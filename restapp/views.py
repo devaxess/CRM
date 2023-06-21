@@ -13,8 +13,9 @@ from rest_framework.decorators import api_view, APIView
 from rest_framework import generics, status
 from .serializers import EmployeeSerializer, SkillListSerializer, DomainSerializer,  ProjectSerializer, \
      MyProfileSerializer, CommentSerializer,EnquirySerializer, CommentuserSerializer, UserRegistrationSerializer ,\
-     QaSerializer , SuperuserSerializer,TodoAdminSerializer, TaskSerializer, LoginSerializer
-from .models import Employee, empskill, empdomain, Todo, Project,  MyProfile, Comment, Comment_user, Qa,Enquiry,Task,UserProfile
+     QaSerializer , SuperuserSerializer,TodoAdminSerializer, TaskSerializer, LoginSerializer,TodoCommentSerializer
+from .models import Employee, empskill, empdomain, Todo, Project,  MyProfile, Comment, Comment_user, Qa,Enquiry,Task,\
+    UserProfile, TodoComment
 
 
 
@@ -502,7 +503,6 @@ def user_list(request, id=None):
 
 
 
-
 @api_view(['POST'])
 def user_register(request):
     if request.method == 'POST':
@@ -846,6 +846,7 @@ def delete_todo(request, id):
 
 
 
+# Todo filter
 @api_view(['GET'])
 def status_list(request, pk):
     status = request.GET.get('status')
@@ -872,3 +873,34 @@ def status_list(request, pk):
     serializer = TodoAdminSerializer(tasks, many=True)
     return JsonResponse(serializer.data, safe=False)
 
+
+#Todo comments
+
+'''@api_view(['GET'])
+def todo_comments(request):
+    comments = TodoComment.objects.all()
+    serializer = TodoCommentSerializer(comments, many=True)
+    return JsonResponse(serializer.data, safe=False)
+
+'''
+@api_view(['GET', 'POST'])
+def todo_comments(request, todo_id):
+    if request.method == 'GET':
+        comments = TodoComment.objects.filter(todo_id=todo_id)
+        users_comments = []
+
+        for comment in comments:
+            sender_name   = comment.create_user.sender if todo.create_user else None
+            receiver_name = todo.assign_user.name if todo.assign_user else None
+
+
+
+        serializer = TodoCommentSerializer(comments, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    elif request.method == 'POST':
+        request.data['todo'] = todo_id
+        serializer = TodoCommentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

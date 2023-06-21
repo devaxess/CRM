@@ -34,7 +34,7 @@ from restapp.views import (
     LogoutView, myprofile_view, qa_list, qa_detail, comment_detail, CommentCreateView, enquiry_list, enquiry_detail,
     status_list, todo_list, update_task, delete_todo, create_todo, user_task, verify_verification_code, comment_list,
     tasks_by_status, add_task, task_list, update_todo, filter_commentuser, superuser_register, superuser_list,
-    superuser_edit,  LoginView
+    superuser_edit, LoginView, todo_comments
 )
 
 urlpatterns = [
@@ -82,7 +82,7 @@ urlpatterns = [
     path('todo/delete/<int:id>/', delete_todo, name='delete_todo'),
     path('todo/filterlist/<int:pk>/', status_list, name='status_list'),
 
-    path('todo/comments/', comment_list, name='comment_list'),
+    path('todo/comments/<int:todo_id>/', todo_comments, name='todo_comments'),
     path('todo/comments/insert/<int:task_id>/', CommentCreateView.as_view(), name='comment-create'),
     path('todo/comments/<int:id>/', comment_detail, name=' comment_detail'),
 

@@ -2,7 +2,7 @@
 
 from rest_framework import serializers
 from .models import Employee, empskill, empdomain, Todo, Project, MyProfile, Comment, Comment_user, Qa, \
-    Enquiry, Task ,UserProfile
+    Enquiry, Task, UserProfile, TodoComment
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
@@ -43,6 +43,13 @@ class TodoAdminSerializer(serializers.ModelSerializer):
     class Meta:
         model = Todo
         fields = ['id', 'create_user','create_user_name', 'assign_user', 'team', 'title', 'description', 'status', 'priority', 'attachments', 'start_date', 'end_date', 'created_at', 'last_updated']
+
+
+
+class TodoCommentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TodoComment
+        fields = '__all__'
 
 
 
