@@ -874,29 +874,28 @@ def status_list(request, pk):
     return JsonResponse(serializer.data, safe=False)
 
 
+
 #Todo comments
-
-'''@api_view(['GET'])
-def todo_comments(request):
-    comments = TodoComment.objects.all()
-    serializer = TodoCommentSerializer(comments, many=True)
-    return JsonResponse(serializer.data, safe=False)
-
-'''
 @api_view(['GET', 'POST'])
 def todo_comments(request, todo_id):
     if request.method == 'GET':
         comments = TodoComment.objects.filter(todo_id=todo_id)
-        users_comments = []
 
+        serialized_comments = []
         for comment in comments:
-            sender_name   = comment.create_user.sender if todo.create_user else None
-            receiver_name = todo.assign_user.name if todo.assign_user else None
+            sender_name = comment.sender.username if comment.sender else None
+            receiver_name = comment.receiver.username if comment.receiver else None
+            serialized_comment = {
+                'id': comment.id,
+                'todo': comment.todo_id,
+                'sender_name': sender_name,
+                'receiver_name': receiver_name,
+                'content': comment.content,
+                'created_at': comment.created_at
+            }
+            serialized_comments.append(serialized_comment)
+        return JsonResponse(serialized_comments, safe=False)
 
-
-
-        serializer = TodoCommentSerializer(comments, many=True)
-        return JsonResponse(serializer.data, safe=False)
     elif request.method == 'POST':
         request.data['todo'] = todo_id
         serializer = TodoCommentSerializer(data=request.data)
@@ -904,3 +903,32 @@ def todo_comments(request, todo_id):
             serializer.save()
             return JsonResponse(serializer.data, status=status.HTTP_201_CREATED)
         return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    return JsonResponse({"message": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def todo_comment_detail(request, todo_id, comment_id):
+    try:
+        comment = TodoComment.objects.get(todo_id=todo_id, id=comment_id)
+    except TodoComment.DoesNotExist:
+        return Response({"message": "Todo comment not found"}, status=status.HTTP_404_NOT_FOUND)
+
+    if request.method == 'GET':
+        serializer = TodoCommentSerializer(comment)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        serializer = TodoCommentSerializer(comment, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        comment.delete()
+        return Response({"message": "Todo comment deleted"}, status=status.HTTP_204_NO_CONTENT)
+
+    return Response({"message": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)

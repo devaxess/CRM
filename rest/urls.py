@@ -83,17 +83,9 @@ urlpatterns = [
     path('todo/filterlist/<int:pk>/', status_list, name='status_list'),
 
     path('todo/comments/<int:todo_id>/', todo_comments, name='todo_comments'),
-    path('todo/comments/insert/<int:task_id>/', CommentCreateView.as_view(), name='comment-create'),
-    path('todo/comments/<int:id>/', comment_detail, name=' comment_detail'),
+    path('todo/comments/insert/<int:todo_id>/', todo_comments, name='todo_comments'),
+   # path('api/todo/<int:todo_id>/comments/<int:comment_id>/', views.todo_comment_detail, name='todo_comment_detail'),
 
-
-#workbanch_comment
-    path('comment/list/', Commentuser_list, name='Commentuser_list'),
-    path('comment/list/filter/', filter_commentuser, name='filter_commentuser'),
-
-    path('comment/insert/', commentuser_add, name='commentuser_add'),
-    path('comment/update/<int:id>/', commentuser_update, name='commentuser_update'),
-    path('comment/delete/<int:id>/', commentuser_delete, name='commentuser_delete'),
 
 
 #user
@@ -125,5 +117,18 @@ urlpatterns = [
 #candidate info
     path('enquiry/', enquiry_list, name='enquiry_list'),
     path('enquiry/<int:pk>/', enquiry_detail, name='enquiry_detail'),
+
+
+
+
+#workbanch_comment
+    path('comment/list/', Commentuser_list, name='Commentuser_list'),
+    path('comment/list/filter/', filter_commentuser, name='filter_commentuser'),
+
+    path('comment/insert/', commentuser_add, name='commentuser_add'),
+    path('comment/update/<int:id>/', commentuser_update, name='commentuser_update'),
+    path('comment/delete/<int:id>/', commentuser_delete, name='commentuser_delete'),
+
+
 
 ]
