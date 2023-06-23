@@ -21,7 +21,7 @@ class UserProfile(AbstractUser):
         super().save(*args, **kwargs)
 
     def hash_password(self, raw_password):
-        hash_object = hashlib.sha256(raw_password.encode())
+        hash_object = hashlib.sha256(str(raw_password).encode())
         return hash_object.hexdigest()
 
     def check_password(self, raw_password):
@@ -56,7 +56,7 @@ class empdomain(models.Model):
 
 
 
-#Task comment
+#daily_task comment
 class Comment(models.Model):
     sender_id    = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='sent_comments', null=True)
     receiver_id  = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='received_comments', null=True)
@@ -139,7 +139,6 @@ class Project(models.Model):
 
     def __str__(self):
         return self.title
-
 
 
 # Myprofile

@@ -223,7 +223,8 @@ def view_put(request, id):
     return JsonResponse(serializer.errors, status=400)
 
 
-#Myprofile
+# Myprofile
+
 @api_view(['GET'])
 def myprofile(request):
     profile = MyProfile.objects.all()
@@ -272,6 +273,7 @@ def delete_profile(request, pk):
 
 
 #daily_task   and  Comment
+
 @api_view(['GET'])
 def task_list(request):
     if request.method == 'GET':
@@ -408,8 +410,6 @@ def comment_detail(request, id):
 
 
 #comment workbench
-
-
 @api_view(['GET'])
 def Commentuser_list(request):
     if request.method == 'GET':
@@ -670,6 +670,7 @@ def verify_verification_code(request):
 
 
 
+
 @api_view(['POST'])
 def reset_password_view(request):
     email = request.data.get('email')
@@ -888,7 +889,9 @@ def todo_comments(request, todo_id):
             serialized_comment = {
                 'id': comment.id,
                 'todo': comment.todo_id,
+                'sender': comment.sender_id,
                 'sender_name': sender_name,
+                'receiver': comment.receiver_id,
                 'receiver_name': receiver_name,
                 'content': comment.content,
                 'created_at': comment.created_at

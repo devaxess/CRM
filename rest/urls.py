@@ -120,7 +120,6 @@ urlpatterns = [
 
 
 
-
 #workbanch_comment
     path('comment/list/', Commentuser_list, name='Commentuser_list'),
     path('comment/list/filter/', filter_commentuser, name='filter_commentuser'),
