@@ -618,8 +618,6 @@ class LogoutView(APIView):
 
 
 
-
-
 #forgot and reset password
 @api_view(['POST'])
 def forget_password_view(request):
@@ -667,8 +665,6 @@ def verify_verification_code(request):
         return JsonResponse({'error': 'Invalid verification code'}, status=400)
 
     return JsonResponse({'message': 'Verification code matched'}, status=200)
-
-
 
 
 @api_view(['POST'])
@@ -917,21 +913,21 @@ def todo_comment_detail(request, todo_id, comment_id):
     try:
         comment = TodoComment.objects.get(todo_id=todo_id, id=comment_id)
     except TodoComment.DoesNotExist:
-        return Response({"message": "Todo comment not found"}, status=status.HTTP_404_NOT_FOUND)
+        return JsonResponse({"message": "Todo comment not found"}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
         serializer = TodoCommentSerializer(comment)
-        return Response(serializer.data)
+        return JsonResponse(serializer.data)
 
     elif request.method == 'PUT':
         serializer = TodoCommentSerializer(comment, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == 'DELETE':
         comment.delete()
-        return Response({"message": "Todo comment deleted"}, status=status.HTTP_204_NO_CONTENT)
+        return JsonResponse({"message": "Todo comment deleted"}, status=status.HTTP_204_NO_CONTENT)
 
-    return Response({"message": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
+    return JsonResponse({"message": "Method not allowed"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)

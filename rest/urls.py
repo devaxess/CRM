@@ -84,7 +84,7 @@ urlpatterns = [
 
     path('todo/comments/<int:todo_id>/', todo_comments, name='todo_comments'),
     path('todo/comments/insert/<int:todo_id>/', todo_comments, name='todo_comments'),
-   # path('api/todo/<int:todo_id>/comments/<int:comment_id>/', views.todo_comment_detail, name='todo_comment_detail'),
+    #path('todo/<int:todo_id>/comments/<int:comment_id>/', views.todo_comment_detail, name='todo_comment_detail'),
 
 
 
