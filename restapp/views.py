@@ -594,22 +594,23 @@ def superuser_edit(request, user_id):
 #user login and logout
 class LoginView(APIView):
     def post(self, request):
-        serializer = LoginSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-
-        email = serializer.validated_data['email']
-        password = serializer.validated_data['password']
+        email = request.data.get("email")
+        password = request.data.get("password")
 
         try:
             user = UserProfile.objects.get(email=email)
         except UserProfile.DoesNotExist:
-            return JsonResponse({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
+            return JsonResponse({'message': 'Email not Found'}, status=status.HTTP_401_UNAUTHORIZED)
 
         if user.check_password(password):
-            return JsonResponse({'message': 'Login successful'}, status=status.HTTP_200_OK)
+                if user.is_superuser:
+                    # Superuser login
+                    return JsonResponse({"message": "Superuser login successful", "id": user.id}, status=status.HTTP_200_OK)
+                else:
+                    # Normal user login
+                    return JsonResponse({"message": "User login successful", "id": user.id}, status=status.HTTP_200_OK)
         else:
-            return JsonResponse({'message': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-
+            return JsonResponse({'message': 'Wrong password'}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 class LogoutView(APIView):

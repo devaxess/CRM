@@ -31,8 +31,8 @@ from restapp.views import (
     delete_profile, Commentuser_list, commentuser_add,
     commentuser_update, user_list, user_register, update_user, commentuser_delete,
     forget_password_view, reset_password_view,
-    LogoutView, myprofile_view, qa_list, qa_detail, comment_detail, CommentCreateView, enquiry_list, enquiry_detail,
-    status_list, todo_list, update_task, delete_todo, create_todo, user_task, verify_verification_code, comment_list,
+    LogoutView, myprofile_view, qa_list, qa_detail, enquiry_list, enquiry_detail,
+    status_list, todo_list, update_task, delete_todo, create_todo, user_task, verify_verification_code,
     tasks_by_status, add_task, task_list, update_todo, filter_commentuser, superuser_register, superuser_list,
     superuser_edit, LoginView, todo_comments
 )
