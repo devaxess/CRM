@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the_include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path
 from restapp.views import (
@@ -127,7 +128,5 @@ urlpatterns = [
     path('comment/insert/', commentuser_add, name='commentuser_add'),
     path('comment/update/<int:id>/', commentuser_update, name='commentuser_update'),
     path('comment/delete/<int:id>/', commentuser_delete, name='commentuser_delete'),
-
-
 
 ]
